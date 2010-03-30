@@ -6,6 +6,8 @@
 // GPX Docu
 // http://www.topografix.com/gpx_manual.asp#hdop
 
+
+// Let all units be meters and seconds, convert in the controller
 class GPS_Track
 {
     /**
@@ -14,9 +16,9 @@ class GPS_Track
     public $distance = 0.0;
     
     /** 
-     * AVG Speed of Track
+     * Speed of Track
      */
-    public $avg_speed = Null;
+    public $speed = 0.0;
 
     /**
      * Total time taken for Track (in seconds)
@@ -127,6 +129,8 @@ class GPS_Track
                     'fix' => (string) $trkpt->fix,
                     'sat' => (int) $trkpt->sat,
                     'distance_to_prev' => 0.0,
+                    'time_to_prev' => 0,
+                    'speed_to_prev' => 0,
                 );
 
             if ($index > 0)
@@ -135,12 +139,17 @@ class GPS_Track
                                                     $trk[$index-1]->lat,
                                                     $trk[$index-1]->lon,
                                                     $trk[$index]->lat,
-                                                    $trk[$index]->lon);
+                                                    $trk[$index]->lon) * 1000;
+                $trk[$index]->time_to_prev = $trk[$index]->time - $trk[$index-1]->time;
                 $this->distance += $trk[$index]->distance_to_prev;
+
+                $trk[$index]->speed_to_prev = $trk[$index]->distance_to_prev / $trk[$index]->time_to_prev;
             }
             $index++;
         }
         $this->total_time_taken = $trk[count($trk)-1]->time - $trk[0]->time;
+        $this->speed = $this->distance / $this->total_time_taken;
+
         $this->track = $trk;
 
         unset($children);
@@ -156,16 +165,17 @@ class GPS_Track
      **/
     public function __tostring()
     {
-        $str = '<pre>';
-        foreach (array('filename', 'date', 'distance', 'avg_speed', 'total_time_taken') as $type)
-        {
-            $str .= "{$type}: {$this->$type}\n";
-        }
+        $str  = '<pre>';
+        $str .= "Filename: {$this->filename}\n";
+        $str .= "Date: ".date('r', $this->date)."\n";
+        $str .= "Speed: ".number_format($this->speed * 3.6,4)." km/h\n";
+        $str .= "Distance: ".number_format($this->distance / 1000, 4)." km\n";
+
+        $str .= "Total Time Taken: ".date_diff($this->total_time_taken)."\n";
         $str .= "Trackpoints: ".count($this->track)."\n";
 
         $str .= "First Trackpoint:\n".print_r($this->track[0], True);
         $str .= "Last Trackpoint:\n".print_r($this->track[count($this->track)-1], True);
-
         $str .= '</pre>';
 
         return ($str);

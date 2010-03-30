@@ -32,6 +32,9 @@ body {
     text-decoration: none;
     color: #666;
 }
+#hd a:hover {
+    text-decoration: underline;
+}
 
 #hd p {
     display: block;

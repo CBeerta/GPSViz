@@ -18,7 +18,7 @@ class Main extends Controller
                     ));
 
         $gps = $this->gpsparser->get($file);
-        $data['content'] = $gps;
+        $data['gps'] = $gps;
 	    $this->load->view("main", $data);
 	}
 }
