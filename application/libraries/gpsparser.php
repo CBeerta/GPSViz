@@ -1,5 +1,4 @@
-﻿<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 // GeoCALC
 // http://imaginerc.com/software/GeoCalc/
@@ -12,12 +11,17 @@ class GPS_Track
     /**
      * Total Distance of Track
      */
-    public $distance = Null;
+    public $distance = 0.0;
     
     /** 
      * AVG Speed of Track
      */
     public $avg_speed = Null;
+
+    /**
+     * Total time taken for Track (in seconds)
+     **/
+    public $total_time_taken = 0;
 
     /**
      * Entire Track with all Track Points
@@ -58,6 +62,11 @@ class GPS_Track
      * FIXME: Location of gpsbabel needs to go into a config file
      */	
 	private $gpsbabel = '/usr/bin/gpsbabel';
+
+    /**
+     * is_loaded tells parent class if the file has actually been parsed
+     */
+    public $is_loaded = False;
 	
 	/**
 	 * Constructor checks if the gps file is loadable
@@ -80,11 +89,13 @@ class GPS_Track
 		}
 		$this->file_type = $type;
 		$this->stat = (object)stat($this->filename);
-		$this->date = date('c', $this->stat->ctime);
+		$this->date = $this->stat->ctime;
     }
 	
 	public function load()
 	{
+        $CI =& get_instance();
+
 		$cmd = "{$this->gpsbabel} -i {$this->file_type} -f '{$this->filename}' -c UTF-8 -o gpx,gpxver=1.1 -F -";
 		exec($cmd, $output, $ret_var);
 		if (!($xml = @simplexml_load_string(implode("\n", $output))))
@@ -100,27 +111,65 @@ class GPS_Track
         }
 	   
         // Save the first trackpoints date_time as time for our track
-        $this->date = (string) $children->trk->trkseg->trkpt[0]->time[0];
+        $this->date = strtotime((string) $children->trk->trkseg->trkpt[0]->time[0]);
 
-        $track_points =  array();
+        $trk =  array();
+        $index = 0;
         foreach ($children->trk->trkseg->trkpt as $trkpt)
         {
             $attr = $trkpt->attributes();
-            $track_points[] = (object) array(
+            $trk[$index] = (object) array(
                     'lat' => (float) $attr->lat, 
                     'lon' => (float) $attr->lon,
-                    'time' => (string) $trkpt->time,
+                    'time' => strtotime((string) $trkpt->time),
+                    'hrtime' => date('c', strtotime((string) $trkpt->time)),
                     'ele' => (float) $trkpt->ele,
                     'fix' => (string) $trkpt->fix,
                     'sat' => (int) $trkpt->sat,
+                    'distance_to_prev' => 0.0,
                 );
-        }
 
-        $this->track = $track_points;
+            if ($index > 0)
+            {
+                $trk[$index]->distance_to_prev = $CI->geocalc->EllipsoidDistance(
+                                                    $trk[$index-1]->lat,
+                                                    $trk[$index-1]->lon,
+                                                    $trk[$index]->lat,
+                                                    $trk[$index]->lon);
+                $this->distance += $trk[$index]->distance_to_prev;
+            }
+            $index++;
+        }
+        $this->total_time_taken = $trk[count($trk)-1]->time - $trk[0]->time;
+        $this->track = $trk;
 
         unset($children);
 		unset($xml);
+
+        $this->is_loaded = True;
+        return;
 	}
+
+    /**
+     * Textual representation of this track
+     *
+     **/
+    public function __tostring()
+    {
+        $str = '<pre>';
+        foreach (array('filename', 'date', 'distance', 'avg_speed', 'total_time_taken') as $type)
+        {
+            $str .= "{$type}: {$this->$type}\n";
+        }
+        $str .= "Trackpoints: ".count($this->track)."\n";
+
+        $str .= "First Trackpoint:\n".print_r($this->track[0], True);
+        $str .= "Last Trackpoint:\n".print_r($this->track[count($this->track)-1], True);
+
+        $str .= '</pre>';
+
+        return ($str);
+    }
 }
 
 class GPSParser 
@@ -134,21 +183,15 @@ class GPSParser
 			'gpx' => 'gpx',
 		);
 		
-	private $file_list = array();
+    /**
+     * List with files, containing names and dates
+     */
+	public $file_list = array();
 	
-	private $tracks = array();
 	
 	public function __construct()
 	{
-        print '<pre>';
-		
 		$this->load_directory();
-
-        print "Before: ".number_format(memory_get_usage())."\n";
-		$this->file_list[0]->load();
-        print "After: ".number_format(memory_get_usage())."\n";
-
-		print_r($this->file_list[0]);
 		return;
 	}
 	
@@ -210,13 +253,38 @@ class GPSParser
 				{
 				    continue;
 			    }
-				$this->file_list[] =& new GPS_Track($this->directory, $file, $type);
+				$this->file_list[$file] =& new GPS_Track($this->directory, $file, $type);
 			}
             closedir($dh);
         }
     }
 
-}
+    /**
+     * Return the list of gps files
+     *
+     */
+    public function get_files($offset = 0, $amount = Null)
+    {
+        return (array_slice($this->file_list, $offset, $amount));
+    }
 
+    /**
+     * Return $file, or False if not actually found
+     *
+     * @param string Name of the file
+     */
+     public function get($file)
+     {
+        if (isset($this->file_list[$file]))
+        {
+            if ($this->file_list[$file]->is_loaded == False)
+            {
+                $this->file_list[$file]->load();
+            }
+            return $this->file_list[$file];
+        }
+        return False;
+     }
+}
 
 ?>

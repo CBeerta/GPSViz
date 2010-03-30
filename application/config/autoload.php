@@ -39,7 +39,7 @@
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array('gpsparser');
+$autoload['libraries'] = array('gpsparser', 'geocalc', 'pagination');
 
 
 /*
@@ -51,7 +51,7 @@ $autoload['libraries'] = array('gpsparser');
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('url');
+$autoload['helper'] = array('url','various');
 
 
 /*
