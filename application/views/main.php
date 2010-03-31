@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <title>GPS-Man</title>
+    <title>GPSViz</title>
     <!-- css --> 
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/reset-fonts-grids/reset-fonts-grids.css"> 
     <link rel="stylesheet" type="text/css" href="<?php echo base_url();?>files/style.css"> 
@@ -33,7 +33,7 @@
    </div>
 
     <div id="ft"><!-- Footer -->
-        <p>GPS-Man (Another Software that needs a name) &copy; 2010 Claus Beerta &lt;<a href="mailto:claus@beerta.de">claus@beerta.de</a>&gt;</p>
+        <p>GPSViz &copy; 2010 Claus Beerta &lt;<a href="mailto:claus@beerta.de">claus@beerta.de</a>&gt;</p>
     </div>
 
 </body>
