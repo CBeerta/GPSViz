@@ -11,6 +11,7 @@
         <tr><th>Distance:</th><td><?php echo number_format($gps->distance / 1000, 2); ?> km</td></tr>
         <tr><th>Speed:</th><td><?php echo number_format($gps->speed * 3.6, 2); ?> km/h</td></tr>
         <tr><th>Time Taken:</th><td><?php echo date_diff($gps->total_time_taken); ?></td></tr>
+        <tr><th>Coordinates:</th><td><?php echo count($gps->track); ?></td></tr>
     </table>
     <div>
 

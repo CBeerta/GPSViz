@@ -1,5 +1,10 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+/**
+ * Directory holding the GPS files
+ */
+$config['gps_directory'] = "/home/claus/www/gps-files";
+	
 
 /**
  * Where gpsbabel is installed
@@ -14,5 +19,9 @@ $config['gpsbabel'] = '/usr/bin/gpsbabel';
  */
 $config["google_maps_key"] = 'ABQIAAAAOXwIs0kAMCTT4R_LT2qceBT1J3d04cTIINafQvOpmWXrTarkoRT_B51w-AVaXrCGTxWcK_zP0JiZkw';
 
+/**
+ * Directory where the webserver can write and read temporary files (should be outside the Document Root)
+ */
+$config['tmp_directory'] = "/var/tmp";
 
 ?>

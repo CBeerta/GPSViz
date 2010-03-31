@@ -12,9 +12,7 @@
     <script type="text/javascript" src="<?php echo base_url();?>files/fancybox/jquery.fancybox-1.2.5.pack.js"></script>
     <link rel="stylesheet" type="text/css" href="<?php echo base_url();?>files/fancybox/jquery.fancybox-1.2.5.css">
     <!-- google map -->
-    <!--
     <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $google_maps_key;?>&amp;hl=de"></script>
-    -->
 </head>
 <body onload="initialize()" onunload="GUnload()">
 

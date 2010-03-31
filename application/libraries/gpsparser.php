@@ -183,9 +183,10 @@ class GPS_Track
 
 class GPSParser 
 {
-	// FIXME: Needs to be in config or something
-	private $directory = "/home/claus/www/gps-files";
-	
+    /**
+     * List with recognized file types
+     * FIXME: needs extending
+     */
 	private $recognized_files = array(
 	        /* 'type as recognized by gpsbabel' => 'file extension' */
 			'nmea' => 'nmea',
@@ -197,11 +198,15 @@ class GPSParser
      */
 	public $file_list = array();
 	
-	
+    /**
+     * Constructor that reads the directory given in appconfig.php
+     *
+     * @return bool
+     **/
 	public function __construct()
 	{
 		$this->load_directory();
-		return;
+		return true;
 	}
 	
 
@@ -250,19 +255,23 @@ class GPSParser
 	 */
 	public function load_directory()
     {
-		if ($dh = opendir($this->directory)) 
+        $CI =& get_instance();
+
+        $directory = $CI->config->item('gps_directory');
+
+		if ($dh = opendir($directory)) 
 		{
 			while (($file = readdir($dh)) !== false) 
 			{
-				if (!is_file("{$this->directory}/{$file}"))
+				if (!is_file("{$directory}/{$file}"))
 				{
 					continue;
 				}
-				else if (!($type = $this->_is_gps_file("{$this->directory}/{$file}")))
+				else if (!($type = $this->_is_gps_file("{$directory}/{$file}")))
 				{
 				    continue;
 			    }
-				$this->file_list[md5($file)] =& new GPS_Track($this->directory, $file, $type);
+				$this->file_list[md5($file)] =& new GPS_Track($directory, $file, $type);
 			}
             closedir($dh);
         }
