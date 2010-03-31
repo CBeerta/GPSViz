@@ -11,50 +11,31 @@
     <!-- fancybox -->
     <script type="text/javascript" src="<?php echo base_url();?>files/fancybox/jquery.fancybox-1.2.5.pack.js"></script>
     <link rel="stylesheet" type="text/css" href="<?php echo base_url();?>files/fancybox/jquery.fancybox-1.2.5.css">
-
-    <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAOXwIs0kAMCTT4R_LT2qceBT1J3d04cTIINafQvOpmWXrTarkoRT_B51w-AVaXrCGTxWcK_zP0JiZkw&amp;hl=de"></script>
-    <script type="text/javascript">
-    function initialize() {
-        var map = new GMap2(document.getElementById("map_canvas"));
-        map.setMapType(G_NORMAL_MAP);
-
-        // Center on startpoint FIXME: Center maybe? like the midpoint?
-        map.setCenter(new GLatLng(<?php echo "{$gps->track[0]->lat}, {$gps->track[0]->lon}";?>), 14);
-
-        // Load controls
-        var mapControl = new GMapTypeControl();
-        map.addControl(mapControl);
-        map.addControl(new GLargeMapControl());
-
-        // Add The route
-        var polyline = new GPolyline([
-                <?php foreach ($gps->track as $trkpt):?>
-                new GLatLng(<?php echo "{$trkpt->lat}, {$trkpt->lon}";?>),
-                <?php endforeach; ?>
-                ], "#FF0000", 5);
-        map.addOverlay(polyline);
-    }
-    </script>
+    <!-- google map -->
+    <!--
+    <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $google_maps_key;?>&amp;hl=de"></script>
+    -->
 </head>
 <body onload="initialize()" onunload="GUnload()">
 
 <div id="doc4"> <!-- artificially limit myself to 1000 width -->
     <div id="hd"><!-- Header -->
         <ul>
-            <?php foreach ($file_list as $file):?>
-            <li><a href="<?php echo site_url("main/index/{$offset}/{$file->file}/");?>"><?php echo date('D, d M Y', $file->date); ?></a></li>
+            <?php foreach ($file_list as $k => $v):?>
+            <li <?php if ($active == $k): ?>class="active"<?php endif; ?>>
+                <a href="<?php echo site_url("main/index/{$offset}/{$k}/");?>" title="<?php echo $v->file;?>"><?php echo date('D, d M Y', $v->date); ?></a>
+            </li>
             <?php endforeach; ?>
         </ul>
         <p><?php echo $this->pagination->create_links(); ?></p>
     </div>
 
     <div id="bd"><!-- Body -->
-       <div id="map_canvas" style="width: 950px; height: 700px; border: 2px solid #333;"></div>
-        <?php echo $gps; ?> 
+        <?php echo $content; ?>
    </div>
 
     <div id="ft"><!-- Footer -->
-
+        <p>GPS-Man (Another Software that needs a name) &copy; 2010 Claus Beerta &lt;<a href="mailto:claus@beerta.de">claus@beerta.de</a>&gt;</p>
     </div>
 
 </body>

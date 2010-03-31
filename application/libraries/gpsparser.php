@@ -61,11 +61,6 @@ class GPS_Track
 	public $date = Null;
 
     /**
-     * FIXME: Location of gpsbabel needs to go into a config file
-     */	
-	private $gpsbabel = '/usr/bin/gpsbabel';
-
-    /**
      * is_loaded tells parent class if the file has actually been parsed
      */
     public $is_loaded = False;
@@ -97,8 +92,9 @@ class GPS_Track
 	public function load()
 	{
         $CI =& get_instance();
+        $gpsbabel = $CI->config->item('gpsbabel');
 
-		$cmd = "{$this->gpsbabel} -i {$this->file_type} -f '{$this->filename}' -c UTF-8 -o gpx,gpxver=1.1 -F -";
+		$cmd = "{$gpsbabel} -i {$this->file_type} -f '{$this->filename}' -c UTF-8 -o gpx,gpxver=1.1 -t -F -";
 		exec($cmd, $output, $ret_var);
 		if (!($xml = @simplexml_load_string(implode("\n", $output))))
 		{
@@ -142,8 +138,11 @@ class GPS_Track
                                                     $trk[$index]->lon) * 1000;
                 $trk[$index]->time_to_prev = $trk[$index]->time - $trk[$index-1]->time;
                 $this->distance += $trk[$index]->distance_to_prev;
-
-                $trk[$index]->speed_to_prev = $trk[$index]->distance_to_prev / $trk[$index]->time_to_prev;
+                
+                if ($trk[$index]->time_to_prev != 0)
+                {
+                    $trk[$index]->speed_to_prev = $trk[$index]->distance_to_prev / $trk[$index]->time_to_prev;
+                }
             }
             $index++;
         }
@@ -263,7 +262,7 @@ class GPSParser
 				{
 				    continue;
 			    }
-				$this->file_list[$file] =& new GPS_Track($this->directory, $file, $type);
+				$this->file_list[md5($file)] =& new GPS_Track($this->directory, $file, $type);
 			}
             closedir($dh);
         }

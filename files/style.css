@@ -6,6 +6,47 @@ body {
 }
 
 
+h2 {
+    margin-bottom: 5px;
+    /* text-decoration: underline; */
+    font-weight: bold;
+    font-size: 130%;
+}
+
+caption {
+    font-size: 100%;
+    text-align: center;
+    font-weight: bold;
+    background: #eee;
+    padding: 5px;
+}
+
+th {
+    text-align: right;
+    padding: 5px;
+}
+
+
+
+/* Map Snippet */
+#map_snippet {
+    margin-bottom: 30px;
+}
+
+#map_canvas {
+    width: 950px; 
+    height: 500px;
+    border: 2px solid #333;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Info Snippet */
+#info_snippet .height_chart {
+    display: block;
+    float: right;
+}
+
 /* Header with navigation*/
 #hd {
     width: 100%;
@@ -25,6 +66,11 @@ body {
     display: inline;
 }
 
+#hd .active a {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
 #hd a {
     display: block;
     float: left;
@@ -41,3 +87,15 @@ body {
     float: right;
 }
 
+
+/* Footer */
+#ft {
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+#ft p {
+    text-align: center;
+    font-size: smaller;
+    margin: 0;
+}
