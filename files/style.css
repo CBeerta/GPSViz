@@ -31,6 +31,22 @@ a {
     text-decoration: none;
 }
 
+#hd h1 {
+    font-size: x-large;
+    font-weight: bold;
+}
+
+#heading {
+    font-size: large;
+    border-bottom: 1px solid #999;
+}
+
+#info_snippet {
+    padding: 5px;
+    clear: both;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 #date {
     display: block;

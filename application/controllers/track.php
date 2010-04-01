@@ -22,6 +22,7 @@ class Track extends Controller
         if ($file !== Null && ($gps = $this->gpsparser->get($file)) !== False)
         {
             $data['gps'] = $gps;
+            $data['draw_chart'] = True;
             $data['content'] = $this->load->view("map_snippet", $data, True);
             $data['content'] .= $this->load->view("info_snippet", $data, True);
         }
@@ -32,6 +33,15 @@ class Track extends Controller
         
 	    $this->load->view("track_view", $data);
 	}
+
+    public function ajax($file)
+    {
+        $data['gps'] = $this->gpsparser->get($file);
+        $data['active'] = $file;
+        $data['draw_chart'] = True;
+        print $this->load->view("info_snippet", $data, True);
+        exit;
+    }
 }
 
 ?>

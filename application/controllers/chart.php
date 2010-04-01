@@ -11,7 +11,7 @@ class Chart extends Controller
             $max = 0;
             $distance = $x = 0;
 
-            foreach ($gps->track as $trkpt)
+            foreach (array_merge($gps->track, array($gps->track[count($gps->track)-1])) as $trkpt)
             {
                 if ($x == 0)
                 {
@@ -31,15 +31,16 @@ class Chart extends Controller
                 }
                 $distance += round($trkpt->distance_to_prev, 0);
             }
-            $chartdata[(string) round($distance/1000, 1)] = round($gps->track[count($gps->track)-1]->ele, 0);
-
             if ($min > 10)
             {
                 $min -= 10;
             }
 
             $this->load->library('phpgraphlib', array('width' => 500,'height' => 200));
-            $this->phpgraphlib->setRange($max, $min);
+            if ($min >= 0)
+            {
+                $this->phpgraphlib->setRange($max, $min);
+            }
             $this->phpgraphlib->addData($chartdata);
 
             //$this->phpgraphlib->setBackgroundColor("76,76,76");

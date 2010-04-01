@@ -8,22 +8,41 @@
     <link rel="stylesheet" type="text/css" href="<?php echo base_url();?>files/style.css"> 
     <!-- js --> 
     <script type="text/javascript" src="<?php echo base_url();?>files/jquery.js"></script>
+    <script type="text/javascript">
+
+$(document) .ready(function(){
+
+    $("div#info_snippet").each(function(index) {
+        var snippet = $(this);
+        var name = $(this).attr("name");
+        
+        $.get('<?php echo site_url("track/ajax/");?>/' + name, function(data) {
+            snippet.html(data);
+            snippet.css('height', '220px'); // Make sure the snippet fits, i'd like to know a better solution than this.
+        });
+    });
+
+});
+
+    </script>
 </head>
 <body>
 
 <div id="doc4"> <!-- artificially limit myself to 1000 width -->
 
     <div id="hd"><!-- Header -->
-        <p>GPSViz</p>
+        <h1>GPSViz</h1>
     </div>
 
     <div id="bd"><!-- Body -->
     <?php foreach ($file_list as $k => $v): ?>
-        <p>
+        <p id="heading">
             <small id="date"><?php echo date('F j, Y, G:i', $v['date']); ?></small>
             <a href="<?php echo site_url("track/index/0/{$k}/");?>" title="<?php echo $v['file'];?>"><?php echo $v['file'];?></a>
         </p>
-        <div id="info_snippet_<?php echo $k; ?>"></div>
+        <div id="info_snippet" name="<?php echo $k; ?>">
+        
+        </div>
     <?php endforeach; ?>
    </div>
 

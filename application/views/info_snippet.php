@@ -1,8 +1,9 @@
 <div id="info_snippet">
-
+    <?php if (isset($draw_chart)): ?>
     <div class="height_chart">
         <img src="<?php echo site_url("chart/height/{$active}");?>" width="500" height="200">
     </div>
+    <?php endif; ?>
 
     <div>
     <table id="info_table">
