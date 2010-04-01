@@ -6,6 +6,8 @@ function initialize() {
     var map = new GMap2(document.getElementById("map_canvas"));
     map.setMapType(G_NORMAL_MAP);
 
+    map.enableScrollWheelZoom();
+
     // Center on startpoint FIXME: Center maybe? like the midpoint?
     map.setCenter(new GLatLng(<?php echo "{$gps->track[0]->lat}, {$gps->track[0]->lon}";?>), 14);
 

@@ -18,7 +18,7 @@
 <div id="doc4"> <!-- artificially limit myself to 1000 width -->
     <div id="hd"><!-- Header -->
         <ul>
-            <li><a href="<?php echo site_url("main/index");?>" title="Home">Home</a></li>
+            <li><a href="<?php echo site_url("main/index");?>" title="Home" id="home">Home</a></li>
             <?php foreach ($file_list as $k => $v):?>
             <li <?php if ($active == $k): ?>class="active"<?php endif; ?>>
                 <a href="<?php echo site_url("track/index/{$offset}/{$k}/");?>" title="<?php echo $v['file'];?>"><?php echo date('D, d M Y', $v['date']); ?></a>

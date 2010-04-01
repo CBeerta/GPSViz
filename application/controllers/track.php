@@ -4,16 +4,18 @@ class Track extends Controller
 {
 	public function index($offset = 0, $file = Null, $view = 'map')
 	{
-        $data['file_list'] = $this->gpsparser->get_files($offset, 5);
+        $per_page = $this->config->item('tracks_per_page');
+        $data['file_list'] = $this->gpsparser->get_files($offset, $per_page);
         $data['offset'] = $offset;
         $data['active'] = $file;
         $data['google_maps_key'] = $this->config->item('google_maps_key');
+        
 
         $this->pagination->initialize(array(
                         'base_url' => site_url('track/index'), 
                         'total_rows' => count($this->gpsparser->file_list), 
-                        'per_page' => 5, 
-                        'num_links' => 3,
+                        'per_page' => $per_page, 
+                        'num_links' => 4,
                         'cur_tag_open' => '<a href="#" style="font-weight: bold; text-decoration: underline;">',
                         'cur_tag_close' => '</a>',
                         'uri_segment' => 3,

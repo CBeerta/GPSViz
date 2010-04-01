@@ -2,10 +2,22 @@
 
 class Main extends Controller
 {
-	public function index($offset = 0, $file = Null, $view = 'map')
+	public function index()
 	{
-        $data['file_list'] = $this->gpsparser->get_files();
+	    $files = $this->gpsparser->get_files();
+	    $per_page = $this->config->item('tracks_per_page');
 
+        // Figure out the offsets to be able to jump to the right page on detail view	    
+	    $offset = 0;
+        foreach (array_chunk($files, $per_page, True) as $block)
+        {
+            foreach ($block as $k => $v)
+            {
+                $files[$k] = array_merge($v, array('offset' => $offset));
+            }
+            $offset+=$per_page;
+        }	  
+        $data['file_list'] = $files;
         $this->load->view("main", $data);
     }
 }

@@ -4,13 +4,11 @@
  * Directory holding the GPS files
  */
 $config['gps_directory'] = "/home/claus/www/gps-files";
-	
 
 /**
  * Where gpsbabel is installed
  */
 $config['gpsbabel'] = '/usr/bin/gpsbabel';
-
 
 /**
  * Your Google Maps api key
@@ -23,5 +21,10 @@ $config["google_maps_key"] = 'ABQIAAAAOXwIs0kAMCTT4R_LT2qceBT1J3d04cTIINafQvOpmW
  * Directory where the webserver can write and read temporary files (should be outside the Document Root)
  */
 $config['tmp_directory'] = "/var/tmp";
+
+/**
+ * How many tracks to show in the pagination
+ */
+$config['tracks_per_page'] = 5;
 
 ?>
