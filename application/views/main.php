@@ -10,25 +10,23 @@
     <script type="text/javascript" src="<?php echo base_url();?>files/jquery.js"></script>
     <script type="text/javascript">
 
-$(document) .ready(function(){
-
-    $("div#info_snippet").each(function(index) {
-        var snippet = $(this);
-        var name = $(this).attr("name");
-        
-        $.get('<?php echo site_url("track/ajax/");?>/' + name, function(data) {
-            snippet.html(data);
-            snippet.css('height', '220px'); // Make sure the snippet fits, i'd like to know a better solution than this.
+    $(document) .ready(function(){
+        $("div#info_snippet").each(function(index) {
+            var snippet = $(this);
+            var name = $(this).attr("name");
+            
+            $.get('<?php echo site_url("track/ajax/");?>/' + name, function(data) {
+                snippet.html(data);
+                //snippet.css('height', '220px'); // Make sure the snippet fits, i'd like to know a better solution than this.
+            });
         });
     });
-
-});
 
     </script>
 </head>
 <body>
 
-<div id="doc4"> <!-- artificially limit myself to 1000 width -->
+<div id="doc4">
 
     <div id="hd"><!-- Header -->
         <h1>GPSViz</h1>
@@ -38,10 +36,9 @@ $(document) .ready(function(){
     <?php foreach ($file_list as $k => $v): ?>
         <p id="heading">
             <small id="date"><?php echo date('F j, Y, G:i', $v['date']); ?></small>
-            <a href="<?php echo site_url("track/index/0/{$k}/");?>" title="<?php echo $v['file'];?>"><?php echo $v['file'];?></a>
+            <a href="<?php echo site_url("track/index/0/{$k}/");?>" title="<?php echo $v['name'];?>"><?php echo $v['name'];?></a>
         </p>
         <div id="info_snippet" name="<?php echo $k; ?>">
-        
         </div>
     <?php endforeach; ?>
    </div>

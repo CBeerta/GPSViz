@@ -24,6 +24,7 @@ caption {
 th {
     text-align: right;
     padding: 5px;
+    color: #222;
 }
 
 a {
@@ -39,6 +40,9 @@ a {
 #heading {
     font-size: large;
     border-bottom: 1px solid #999;
+}
+#heading a {
+    color: #222;
 }
 
 #info_snippet {

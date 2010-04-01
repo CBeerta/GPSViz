@@ -36,9 +36,9 @@ class Track extends Controller
 
     public function ajax($file)
     {
-        $data['gps'] = $this->gpsparser->get($file);
+        $data['gps'] = $this->gpsparser->get($file, False);
         $data['active'] = $file;
-        $data['draw_chart'] = True;
+        //$data['draw_chart'] = True;
         print $this->load->view("info_snippet", $data, True);
         exit;
     }

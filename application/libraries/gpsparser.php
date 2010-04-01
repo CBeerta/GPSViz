@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-DEFINE("TMP_FILE_VER", "0.0.1");
+DEFINE("TMP_FILE_VER", "0.0.2");
 
 // GeoCALC
 // http://imaginerc.com/software/GeoCalc/
@@ -47,6 +47,11 @@ class GPS_Track
 	private $directory = Null;
 	
 	/**
+	 * Name of the Track ( = Filename without extension)
+	 */
+	public $name = Null;
+	
+	/**
 	 * The filename (without directory)
 	 */
 	public $file = Null;
@@ -70,6 +75,11 @@ class GPS_Track
 	 * Date of the Track
 	 */
 	public $date = Null;
+
+	/** 
+	 * How many coords does this track have
+	 */
+	public $coordinates = 0;
 
     /**
      * is_loaded tells parent class if the file has actually been parsed
@@ -98,6 +108,7 @@ class GPS_Track
 			throw new Exception("Unable to load {$file}");
 		}
 		$this->file_type = $type;
+		list($this->name) = explode('.', $file);
 		$this->stat = (object)stat($this->filename);
 		$this->date = $this->stat->ctime;
 
@@ -114,11 +125,18 @@ class GPS_Track
             }
             else
             {
-                $this->date = $data['date'];
+                foreach (array('date', 'total_time_taken', 'speed', 'distance', 'coordinates') as $var)
+                {
+                    $this->$var = $data[$var];
+                }
             }
         }
     }
-	
+
+    /**
+     * Does all the heavy lifting: convert input to gpx, load xml, and construct all the variables we need
+     *
+     */
 	public function load()
 	{
         $CI =& get_instance();
@@ -143,6 +161,7 @@ class GPS_Track
 
         $trk =  array();
         $index = 0;
+        $this->distance = $this->speed = $this->total_time_taken = 0;
         foreach ($children->trk->trkseg->trkpt as $trkpt)
         {
             $attr = $trkpt->attributes();
@@ -190,6 +209,10 @@ class GPS_Track
         @file_put_contents("{$tmp_dir}/{$this->file}.info", serialize(array(
                                 'file_ver' => TMP_FILE_VER,
                                 'date' => $this->date,
+                                'total_time_taken' => $this->total_time_taken,
+                                'speed' => $this->speed,
+                                'distance' => $this->distance,
+                                'coordinates' => count($this->track),
                                 )));
         return;
 	}
@@ -249,7 +272,6 @@ class GPSParser
 		$this->load_directory();
 		return true;
 	}
-	
 
     /**
      * Case insensitive array_search
@@ -289,7 +311,6 @@ class GPSParser
 	    return False;
 	}
 	
-	
 	/**
 	 * Loads source directory of gps files and loads the basic stuff
 	 *
@@ -318,6 +339,7 @@ class GPSParser
                                                 'file' => $file,
                                                 'type' => $type,
                                                 'date' => $this->tracks[md5($file)]->date,
+                                                'name' => $this->tracks[md5($file)]->name,
                                                 'track' => Null,
                                                 );
 			}
@@ -340,7 +362,7 @@ class GPSParser
      *
      * @param string Name of the file
      */
-     public function get($name)
+     public function get($name, $do_load = True)
      {
         if (isset($this->file_list[$name]))
         {
@@ -350,11 +372,10 @@ class GPSParser
                 $this->tracks[$name] =& new GPS_Track($file['directory'], $file['file'], $file['type']);
             }
 
-            if ($this->tracks[$name]->is_loaded == False)
+            if ($this->tracks[$name]->is_loaded == False && $do_load == True)
             {
                 $this->tracks[$name]->load();
             }
-
             return $this->tracks[$name];
         }
         return False;

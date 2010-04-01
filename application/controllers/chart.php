@@ -43,7 +43,8 @@ class Chart extends Controller
             }
             $this->phpgraphlib->addData($chartdata);
 
-            //$this->phpgraphlib->setBackgroundColor("76,76,76");
+            $this->phpgraphlib->setGradient("red", "maroon");
+            $this->phpgraphlib->setTitle("Height Chart");
             $this->phpgraphlib->setGridColor("silver");
             $this->phpgraphlib->setGrid(true);
             $this->phpgraphlib->setBars(false);
@@ -58,8 +59,7 @@ class Chart extends Controller
             //$this->phpgraphlib->setDataValueColor("200,200,200");
             //$this->phpgraphlib->setLegendColor("200,200,200");
             //$this->phpgraphlib->setTextColor("200,200,200");
-            $this->phpgraphlib->setGradient("red", "maroon");
-            $this->phpgraphlib->setTitle("Height Chart");
+            //$this->phpgraphlib->setBackgroundColor("76,76,76");
             //$this->phpgraphlib->setTitleColor("200,200,200");
 
             $this->phpgraphlib->createGraph();
