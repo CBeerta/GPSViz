@@ -1,7 +1,7 @@
 <div id="info_snippet">
 
     <div class="height_chart">
-        <img src="<?php echo site_url("main/chart/{$active}");?>" width="500" height="200">
+        <img src="<?php echo site_url("chart/height/{$active}");?>" width="500" height="200">
     </div>
 
     <div>

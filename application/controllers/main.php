@@ -4,7 +4,9 @@ class Main extends Controller
 {
 	public function index($offset = 0, $file = Null, $view = 'map')
 	{
+        $data['file_list'] = $this->gpsparser->get_files();
 
+        $this->load->view("main", $data);
     }
 }
 

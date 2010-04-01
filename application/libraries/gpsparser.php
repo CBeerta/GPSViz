@@ -1,13 +1,24 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
+DEFINE("TMP_FILE_VER", "0.0.1");
+
 // GeoCALC
 // http://imaginerc.com/software/GeoCalc/
 
 // GPX Docu
 // http://www.topografix.com/gpx_manual.asp#hdop
 
-
 // Let all units be meters and seconds, convert in the controller
+
+
+/**
+ * GPS_Track is a representation of a single Track
+ *
+ * @param $directory directory holding the gps files
+ * @param $file filename to open
+ * @param $type type of the gpstrack
+ *
+ */
 class GPS_Track
 {
     /**
@@ -74,6 +85,8 @@ class GPS_Track
 	 **/
     public function __construct($directory, $file, $type)
     {
+        $CI =& get_instance();
+
 		$this->filename = "{$directory}/{$file}";
 		if (is_dir($directory) && is_readable($this->filename))
 		{
@@ -87,6 +100,23 @@ class GPS_Track
 		$this->file_type = $type;
 		$this->stat = (object)stat($this->filename);
 		$this->date = $this->stat->ctime;
+
+        $tmp_file = $CI->config->item('tmp_directory')."/{$file}.info";
+
+        if (file_exists($tmp_file))
+        {
+            $data = @file_get_contents($tmp_file);
+            $data = @unserialize($data);
+            if (!$data || $data['file_ver'] != TMP_FILE_VER)
+            {
+                // If the file could not be read, or is outdated, remove it so it can be recreated
+                @unlink($tmp_file);
+            }
+            else
+            {
+                $this->date = $data['date'];
+            }
+        }
     }
 	
 	public function load()
@@ -155,6 +185,12 @@ class GPS_Track
 		unset($xml);
 
         $this->is_loaded = True;
+
+        $tmp_dir = $CI->config->item('tmp_directory');
+        @file_put_contents("{$tmp_dir}/{$this->file}.info", serialize(array(
+                                'file_ver' => TMP_FILE_VER,
+                                'date' => $this->date,
+                                )));
         return;
 	}
 
@@ -197,6 +233,11 @@ class GPSParser
      * List with files, containing names and dates
      */
 	public $file_list = array();
+
+    /**
+     * Containts all GPSTrack Objects
+     */
+    public $tracks = array();
 	
     /**
      * Constructor that reads the directory given in appconfig.php
@@ -271,10 +312,18 @@ class GPSParser
 				{
 				    continue;
 			    }
-				$this->file_list[md5($file)] =& new GPS_Track($directory, $file, $type);
+                $this->tracks[md5($file)] =& new GPS_Track($directory, $file, $type);
+                $this->file_list[md5($file)] = array(
+                                                'directory' => $directory,
+                                                'file' => $file,
+                                                'type' => $type,
+                                                'date' => $this->tracks[md5($file)]->date,
+                                                'track' => Null,
+                                                );
 			}
             closedir($dh);
         }
+        masort($this->file_list, array('date'));
     }
 
     /**
@@ -291,15 +340,22 @@ class GPSParser
      *
      * @param string Name of the file
      */
-     public function get($file)
+     public function get($name)
      {
-        if (isset($this->file_list[$file]))
+        if (isset($this->file_list[$name]))
         {
-            if ($this->file_list[$file]->is_loaded == False)
+            $file = $this->file_list[$name];
+            if (!isset($this->tracks[$name]))
             {
-                $this->file_list[$file]->load();
+                $this->tracks[$name] =& new GPS_Track($file['directory'], $file['file'], $file['type']);
             }
-            return $this->file_list[$file];
+
+            if ($this->tracks[$name]->is_loaded == False)
+            {
+                $this->tracks[$name]->load();
+            }
+
+            return $this->tracks[$name];
         }
         return False;
      }

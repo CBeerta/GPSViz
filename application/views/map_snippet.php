@@ -24,7 +24,7 @@ function initialize() {
 }
 </script>
 
-<h2>File: <?php echo $gps->file; ?> from <?php echo date('r', $gps->date); ?></h2>
+<h2>File: <?php echo $gps->file; ?></h2>
 <div id="map_canvas"></div>
 
 </div>

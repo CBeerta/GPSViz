@@ -19,7 +19,10 @@
 
     <div id="bd"><!-- Body -->
     <?php foreach ($file_list as $k => $v): ?>
-        <h2><a href="<?php echo site_url("track/index/0/{$k}/");?>" title="<?php echo $v->file;?>"><?php echo $v->file;?></a></h2>
+        <p>
+            <small id="date"><?php echo date('F j, Y, G:i', $v['date']); ?></small>
+            <a href="<?php echo site_url("track/index/0/{$k}/");?>" title="<?php echo $v['file'];?>"><?php echo $v['file'];?></a>
+        </p>
         <div id="info_snippet_<?php echo $k; ?>"></div>
     <?php endforeach; ?>
    </div>

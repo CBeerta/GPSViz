@@ -7,10 +7,9 @@
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/reset-fonts-grids/reset-fonts-grids.css"> 
     <link rel="stylesheet" type="text/css" href="<?php echo base_url();?>files/style.css"> 
     <!-- js --> 
+    <!--
     <script type="text/javascript" src="<?php echo base_url();?>files/jquery.js"></script>
-    <!-- fancybox -->
-    <script type="text/javascript" src="<?php echo base_url();?>files/fancybox/jquery.fancybox-1.2.5.pack.js"></script>
-    <link rel="stylesheet" type="text/css" href="<?php echo base_url();?>files/fancybox/jquery.fancybox-1.2.5.css">
+    -->
     <!-- google map -->
     <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $google_maps_key;?>&amp;hl=de"></script>
 </head>
@@ -19,9 +18,10 @@
 <div id="doc4"> <!-- artificially limit myself to 1000 width -->
     <div id="hd"><!-- Header -->
         <ul>
+            <li><a href="<?php echo site_url("main/index");?>" title="Home">Home</a></li>
             <?php foreach ($file_list as $k => $v):?>
             <li <?php if ($active == $k): ?>class="active"<?php endif; ?>>
-                <a href="<?php echo site_url("track/index/{$offset}/{$k}/");?>" title="<?php echo $v->file;?>"><?php echo date('D, d M Y', $v->date); ?></a>
+                <a href="<?php echo site_url("track/index/{$offset}/{$k}/");?>" title="<?php echo $v['file'];?>"><?php echo date('D, d M Y', $v['date']); ?></a>
             </li>
             <?php endforeach; ?>
         </ul>
