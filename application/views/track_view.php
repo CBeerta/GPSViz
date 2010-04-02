@@ -11,7 +11,7 @@
     <script type="text/javascript" src="<?php echo base_url();?>files/jquery.js"></script>
     -->
     <!-- google map -->
-    <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $google_maps_key;?>&amp;hl=de"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $google_maps_key;?>&amp;hl=en"></script>
 </head>
 <body onload="initialize()" onunload="GUnload()">
 

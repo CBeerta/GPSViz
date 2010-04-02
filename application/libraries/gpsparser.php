@@ -48,78 +48,81 @@ class GPS_Track
     /**
      * In What directory is this track stored 
      */
-	private $directory = Null;
-	
-	/**
-	 * Name of the Track ( = Filename without extension)
-	 */
-	public $name = Null;
-	
-	/**
-	 * The filename (without directory)
-	 */
-	public $file = Null;
+    private $directory = Null;
+    
+    /**
+     * Name of the Track ( = Filename without extension)
+     */
+    public $name = Null;
+    
+    /**
+     * The filename (without directory)
+     */
+    public $file = Null;
 
-	/**
-	 * The filename, including directory
-	 */
-	private $filename = Null;
+    /**
+     * The filename, including directory
+     */
+    private $filename = Null;
     
     /**
      * What type of gps file is it
-     */	
-	private $file_type = Null;
-	
-	/**
-	 * stat() info on $file
-	 */
-	public $stat = Null;
-	
-	/** 
-	 * Date of the Track
-	 */
-	public $date = Null;
+     */ 
+    private $file_type = Null;
+    
+    /**
+     * stat() info on $file
+     */
+    public $stat = Null;
+    
+    /** 
+     * Date of the Track
+     */
+    public $date = Null;
 
-	/** 
-	 * How many coords does this track have
-	 */
-	public $coordinates = 0;
+    /** 
+     * How many coords does this track have
+     */
+    public $coordinates = 0;
 
-	/** 
-	 * lon/lat boundaries of the track as west,east,north,south
-	 */
-	public $boundaries = Null;
+    /** 
+     * lon/lat boundaries of the track as west,east,north,south
+     */
+    public $boundaries = Null;
 
     /**
      * is_loaded tells parent class if the file has actually been parsed
      */
     public $is_loaded = False;
-	
-	/**
-	 * Constructor checks if the gps file is loadable
-	 *
-	 * @param string $directory 
-	 * @param string $file
-	 * @param string $type
-	 **/
+    
+    /**
+     * Constructor checks if the gps file is loadable
+     *
+     * @param string $directory 
+     * @param string $file
+     * @param string $type
+     **/
     public function __construct($directory, $file, $type)
     {
         $CI =& get_instance();
 
-		$this->filename = "{$directory}/{$file}";
-		if (is_dir($directory) && is_readable($this->filename))
-		{
-			$this->file = $file;
-			$this->directory = $directory;
-		}
-		else
-		{
-			throw new Exception("Unable to load {$file}");
-		}
-		$this->file_type = $type;
-		list($this->name) = explode('.', $file);
-		$this->stat = (object)stat($this->filename);
-		$this->date = $this->stat->ctime;
+        $this->filename = "{$directory}/{$file}";
+        if (is_dir($directory) && is_readable($this->filename))
+        {
+            $this->file = $file;
+            $this->directory = $directory;
+        }
+        else
+        {
+            throw new Exception("Unable to load {$file}");
+        }
+        $this->file_type = $type;
+
+        preg_match("#^(.*)\.[a-z]{2,}$#i", $file, $matches);
+        $this->name = $matches[1];
+
+        $this->stat = (object)stat($this->filename);
+        $this->date = $this->stat->ctime;
 
         $tmp_file = $CI->config->item('tmp_directory')."/{$file}.info";
 
@@ -146,17 +149,17 @@ class GPS_Track
      * Does all the heavy lifting: convert input to gpx, load xml, and construct all the variables we need
      *
      */
-	public function load()
-	{
+    public function load()
+    {
         $CI =& get_instance();
         $gpsbabel = $CI->config->item('gpsbabel');
 
-		$cmd = "{$gpsbabel} -i {$this->file_type} -f '{$this->filename}' -c UTF-8 -o gpx,gpxver=1.1 -t -F -";
-		exec($cmd, $output, $ret_var);
-		if (!($xml = @simplexml_load_string(implode("\n", $output))))
-		{
-			throw new Exception("Unable to load {$this->filename}. Is {$gpsbabel} available?");
-		}
+        $cmd = "{$gpsbabel} -i {$this->file_type} -f '{$this->filename}' -c UTF-8 -o gpx,gpxver=1.1 -t -F -";
+        exec($cmd, $output, $ret_var);
+        if (!($xml = @simplexml_load_string(implode("\n", $output))))
+        {
+            throw new Exception("Unable to load {$this->filename}. Is {$gpsbabel} available?");
+        }
 
         $children = $xml->children();
 
@@ -164,7 +167,7 @@ class GPS_Track
         {
             throw new Exception("Not a valid track {$this->filename}.");
         }
-	   
+       
         // Save the first trackpoints date_time as time for our track
         $this->date = strtotime((string) $children->trk->trkseg->trkpt[0]->time[0]);
 
@@ -240,7 +243,7 @@ class GPS_Track
         $this->track = $trk;
 
         unset($children);
-		unset($xml);
+        unset($xml);
 
         $this->is_loaded = True;
 
@@ -255,7 +258,7 @@ class GPS_Track
                                 'coordinates' => count($this->track),
                                 )));
         return;
-	}
+    }
 
     /**
      * Textual representation of this track
@@ -295,32 +298,32 @@ class GPSParser
      * List with recognized file types
      * FIXME: needs extending
      */
-	private $recognized_files = array(
-	        /* 'type as recognized by gpsbabel' => 'file extension' */
-			'nmea' => 'nmea',
-			'gpx' => 'gpx',
-		);
-		
+    private $recognized_files = array(
+            /* 'type as recognized by gpsbabel' => 'file extension' */
+            'nmea' => 'nmea',
+            'gpx' => 'gpx',
+        );
+        
     /**
      * List with files, containing names and dates
      */
-	public $file_list = array();
+    public $file_list = array();
 
     /**
      * Containts all GPSTrack Objects
      */
     public $tracks = array();
-	
+    
     /**
      * Constructor that reads the directory given in appconfig.php
      *
      * @return bool
      **/
-	public function __construct()
-	{
+    public function __construct()
+    {
         try
         {
-        	$this->load_directory();
+            $this->load_directory();
         }
         catch (Exception $e)
         {
@@ -328,7 +331,7 @@ class GPSParser
             show_error($e->getMessage(), 500);
             die();
         }
-	}
+    }
 
     /**
      * Case insensitive array_search
@@ -349,47 +352,47 @@ class GPSParser
             }
         }
         return false;
-    } 	
-	
-	/**
-	 * Checks if $filename is a file that we understand
-	 *
-	 * @param mixed $filename
-	 * @return mixed
-	 */
-	private function _is_gps_file($filename)
-	{
+    }   
+    
+    /**
+     * Checks if $filename is a file that we understand
+     *
+     * @param mixed $filename
+     * @return mixed
+     */
+    private function _is_gps_file($filename)
+    {
         preg_match('|^.*\.([\w]+)$|', $filename, $matches);
                 
         if (isset($matches[1]) && ($type = $this->array_nsearch($matches[1], $this->recognized_files)))
         {
             return $type;
         }
-	    return False;
-	}
-	
-	/**
-	 * Loads source directory of gps files and loads the basic stuff
-	 *
-	 */
-	public function load_directory()
+        return False;
+    }
+    
+    /**
+     * Loads source directory of gps files and loads the basic stuff
+     *
+     */
+    public function load_directory()
     {
         $CI =& get_instance();
 
         $directory = $CI->config->item('gps_directory');
 
-		if ($dh = @opendir($directory)) 
-		{
-			while (($file = readdir($dh)) !== false) 
-			{
-				if (!is_file("{$directory}/{$file}"))
-				{
-					continue;
-				}
-				else if (!($type = $this->_is_gps_file("{$directory}/{$file}")))
-				{
-				    continue;
-			    }
+        if ($dh = @opendir($directory)) 
+        {
+            while (($file = readdir($dh)) !== false) 
+            {
+                if (!is_file("{$directory}/{$file}"))
+                {
+                    continue;
+                }
+                else if (!($type = $this->_is_gps_file("{$directory}/{$file}")))
+                {
+                    continue;
+                }
                 $this->tracks[md5($file)] =& new GPS_Track($directory, $file, $type);
                 $this->file_list[md5($file)] = array(
                                                 'directory' => $directory,
@@ -399,7 +402,7 @@ class GPSParser
                                                 'name' => $this->tracks[md5($file)]->name,
                                                 'track' => Null,
                                                 );
-			}
+            }
             closedir($dh);
         }
         else
@@ -439,7 +442,7 @@ class GPSParser
             }
             return $this->tracks[$name];
         }
-        return False;
+        throw new Exception("File does not exist: {$name}.");
      }
 }
 
