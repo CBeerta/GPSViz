@@ -155,14 +155,14 @@ class GPS_Track
 		exec($cmd, $output, $ret_var);
 		if (!($xml = @simplexml_load_string(implode("\n", $output))))
 		{
-			throw new Exception("Unable to load {$this->filename}");
+			throw new Exception("Unable to load {$this->filename}. Is {$gpsbabel} available?");
 		}
 
         $children = $xml->children();
 
         if (!isset($children->trk->trkseg->trkpt[0]->time[0]))
         {
-            throw new Exception("Not a valid track {$this->filename}");
+            throw new Exception("Not a valid track {$this->filename}.");
         }
 	   
         // Save the first trackpoints date_time as time for our track
