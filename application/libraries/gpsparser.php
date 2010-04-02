@@ -85,6 +85,11 @@ class GPS_Track
 	 */
 	public $coordinates = 0;
 
+	/** 
+	 * lon/lat boundaries of the track as west,east,north,south
+	 */
+	public $boundaries = Null;
+
     /**
      * is_loaded tells parent class if the file has actually been parsed
      */
@@ -166,6 +171,11 @@ class GPS_Track
         $trk =  array();
         $index = 0;
         $this->distance = $this->speed = $this->total_time_taken = 0;
+
+        $attr = $children->trk->trkseg->trkpt[0]->attributes();
+        $left = $right = (float) $attr->lat;
+        $top = $bottom = (float) $attr->lon;
+
         foreach ($children->trk->trkseg->trkpt as $trkpt)
         {
             $attr = $trkpt->attributes();
@@ -200,9 +210,30 @@ class GPS_Track
                         $this->top_speed = $trk[$index]->speed_to_prev;
                     }
                 }
+
+
+                // Find the Boundaries
+                if ($trk[$index]->lat > $right) 
+                {
+                    $right = $trk[$index]->lat;
+                }
+                else if ($trk[$index]->lat < $left)
+                {
+                    $left = $trk[$index]->lat;
+                }
+                if ($trk[$index]->lon > $top) 
+                {
+                    $top = $trk[$index]->lon;
+                }
+                else if ($trk[$index]->lon < $bottom)
+                {
+                    $bottom = $trk[$index]->lon;
+                }
+
             }
             $index++;
         }
+        $this->boundaries = (object) array('west' => $left, 'east' => $right, 'north' => $top, 'south' => $bottom);
         $this->total_time_taken = $trk[count($trk)-1]->time - $trk[0]->time;
         $this->speed = $this->distance / $this->total_time_taken;
 

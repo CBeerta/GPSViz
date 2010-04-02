@@ -22,6 +22,10 @@ class Track extends Controller
 
         if ($file !== Null && ($gps = $this->gpsparser->get($file)) !== False)
         {
+            $mid_point_lat = ($gps->boundaries->west + $gps->boundaries->east) / 2;
+            $mid_point_lon = ($gps->boundaries->north + $gps->boundaries->south) / 2;
+
+            $data['midpoint'] = "{$mid_point_lat}, {$mid_point_lon}";
             $data['gps'] = $gps;
             $data['draw_chart'] = True;
             $data['content'] = $this->load->view("map_snippet", $data, True);

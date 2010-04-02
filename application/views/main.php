@@ -26,7 +26,7 @@
 <div id="doc4">
 
     <div id="hd"><!-- Header -->
-        <h1>GPSViz</h1>
+        <h1>GPSViz</h1> <small>Activity Log</small>
         <p><?php echo $this->pagination->create_links(); ?></p>
     </div>
 

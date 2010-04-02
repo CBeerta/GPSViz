@@ -3,7 +3,7 @@
 /**
  * Directory holding the GPS files
  */
-$config['gps_directory'] = "/home/claus/www/gps-files";
+$config['gps_directory'] = "/var/www/gps-files";
 
 /**
  * Where gpsbabel is installed

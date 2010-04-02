@@ -8,13 +8,19 @@ function initialize() {
 
     map.enableScrollWheelZoom();
 
-    // Center on startpoint FIXME: Center maybe? like the midpoint?
-    map.setCenter(new GLatLng(<?php echo "{$gps->track[0]->lat}, {$gps->track[0]->lon}";?>), 14);
+    // Center on startpoint
+    map.setCenter(new GLatLng(<?php echo "$midpoint";?>), 10);
+    var bds = new GLatLngBounds(new GLatLng(<?php echo "{$gps->boundaries->west}, {$gps->boundaries->south}"; ?>), new GLatLng(<?php echo "{$gps->boundaries->east}, {$gps->boundaries->north}"; ?>))
+    map.setZoom(map.getBoundsZoomLevel(bds));
 
     // Load controls
     var mapControl = new GMapTypeControl();
     map.addControl(mapControl);
-    map.addControl(new GLargeMapControl());
+    map.addControl(new GSmallMapControl());
+    map.addControl(new GScaleControl());
+
+    var mini=new GOverviewMapControl(new GSize(100, 100))
+    map.addControl(mini);
 
     // Add The route
     var polyline = new GPolyline([
