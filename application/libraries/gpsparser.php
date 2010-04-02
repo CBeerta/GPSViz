@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-DEFINE("TMP_FILE_VER", "0.0.2");
+DEFINE("TMP_FILE_VER", "0.0.3");
 
 // GeoCALC
 // http://imaginerc.com/software/GeoCalc/
@@ -31,6 +31,10 @@ class GPS_Track
      */
     public $speed = 0.0;
 
+    /** 
+     * Top Speed of Track
+     */
+    public $top_speed = 0.0;
     /**
      * Total time taken for Track (in seconds)
      **/
@@ -125,7 +129,7 @@ class GPS_Track
             }
             else
             {
-                foreach (array('date', 'total_time_taken', 'speed', 'distance', 'coordinates') as $var)
+                foreach (array('date', 'total_time_taken', 'speed', 'distance', 'coordinates', 'top_speed') as $var)
                 {
                     $this->$var = $data[$var];
                 }
@@ -191,6 +195,10 @@ class GPS_Track
                 if ($trk[$index]->time_to_prev != 0)
                 {
                     $trk[$index]->speed_to_prev = $trk[$index]->distance_to_prev / $trk[$index]->time_to_prev;
+                    if ($trk[$index]->speed_to_prev > $this->top_speed)
+                    {
+                        $this->top_speed = $trk[$index]->speed_to_prev;
+                    }
                 }
             }
             $index++;
@@ -211,6 +219,7 @@ class GPS_Track
                                 'date' => $this->date,
                                 'total_time_taken' => $this->total_time_taken,
                                 'speed' => $this->speed,
+                                'top_speed' => $this->top_speed,
                                 'distance' => $this->distance,
                                 'coordinates' => count($this->track),
                                 )));
@@ -240,6 +249,15 @@ class GPS_Track
     }
 }
 
+
+
+
+
+/**
+ * GPSParser represents all the tracks found in the configured directory
+ *
+ *
+ */
 class GPSParser 
 {
     /**

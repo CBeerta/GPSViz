@@ -23,8 +23,13 @@ $config["google_maps_key"] = 'ABQIAAAAOXwIs0kAMCTT4R_LT2qceBT1J3d04cTIINafQvOpmW
 $config['tmp_directory'] = "/var/tmp";
 
 /**
- * How many tracks to show in the pagination
+ * How many tracks to show in the pagination on the detail track view
  */
 $config['tracks_per_page'] = 5;
+
+/**
+ * How many tracks to show on the home page
+ */
+$config['tracks_per_page_home'] = 10;
 
 ?>

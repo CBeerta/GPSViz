@@ -9,7 +9,6 @@ class Track extends Controller
         $data['offset'] = $offset;
         $data['active'] = $file;
         $data['google_maps_key'] = $this->config->item('google_maps_key');
-        
 
         $this->pagination->initialize(array(
                         'base_url' => site_url('track/index'), 

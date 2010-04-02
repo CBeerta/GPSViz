@@ -27,6 +27,7 @@
 
     <div id="hd"><!-- Header -->
         <h1>GPSViz</h1>
+        <p><?php echo $this->pagination->create_links(); ?></p>
     </div>
 
     <div id="bd"><!-- Body -->
