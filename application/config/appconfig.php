@@ -15,7 +15,7 @@ $config['gpsbabel'] = '/usr/bin/gpsbabel';
  *
  * Found at: http://code.google.com/intl/en/apis/maps/signup.html
  */
-$config["google_maps_key"] = 'BQIAAAAOXwIs0kAMCTT4R_LT2qceBQ2GADgm1ezMFVJ6cO3aik9EkAcBRRENvrod5uF0B-dTwVPde0g0By6Cg';
+$config["google_maps_key"] = 'ABQIAAAAOXwIs0kAMCTT4R_LT2qceBQ2GADgm1ezMFVJ6cO3aik9EkAcBRRENvrod5uF0B-dTwVPde0g0By6Cg';
 
 
 
