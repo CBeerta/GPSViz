@@ -5,7 +5,19 @@ class Track extends Controller
 	public function index($offset = 0, $file = Null, $view = 'map')
 	{
         $per_page = $this->config->item('tracks_per_page');
-        $data['file_list'] = $this->gpsparser->get_files($offset, $per_page);
+
+        try
+        {
+            $data['file_list'] = $this->gpsparser->get_files($offset, $per_page);
+            $gps = $this->gpsparser->get($file);
+        }
+        catch (Exception $e)
+        {
+            $CI =& get_instance();
+            show_error($e->getMessage(), 500);
+            die();
+        }
+
         $data['offset'] = $offset;
         $data['active'] = $file;
         $data['google_maps_key'] = $this->config->item('google_maps_key');
@@ -20,28 +32,30 @@ class Track extends Controller
                         'uri_segment' => 3,
                     ));
 
-        if ($file !== Null && ($gps = $this->gpsparser->get($file)) !== False)
-        {
-            $mid_point_lat = ($gps->boundaries->west + $gps->boundaries->east) / 2;
-            $mid_point_lon = ($gps->boundaries->north + $gps->boundaries->south) / 2;
+        $mid_point_lat = ($gps->boundaries->west + $gps->boundaries->east) / 2;
+        $mid_point_lon = ($gps->boundaries->north + $gps->boundaries->south) / 2;
 
-            $data['midpoint'] = "{$mid_point_lat}, {$mid_point_lon}";
-            $data['gps'] = $gps;
-            $data['draw_chart'] = True;
-            $data['content'] = $this->load->view("map_snippet", $data, True);
-            $data['content'] .= $this->load->view("info_snippet", $data, True);
-        }
-        else
-        {
-            $data['content'] = '';
-        }
+        $data['midpoint'] = "{$mid_point_lat}, {$mid_point_lon}";
+        $data['gps'] = $gps;
+        $data['draw_chart'] = True;
+        $data['content'] = $this->load->view("map_snippet", $data, True);
+        $data['content'] .= $this->load->view("info_snippet", $data, True);
         
 	    $this->load->view("track_view", $data);
 	}
 
     public function ajax($file)
     {
-        $data['gps'] = $this->gpsparser->get($file, False);
+        try
+        {
+            $data['gps'] = $this->gpsparser->get($file, False);
+        }
+        catch (Exception $e)
+        {
+            $CI =& get_instance();
+            show_error($e->getMessage(), 500);
+            die();
+        }
         $data['active'] = $file;
         //$data['draw_chart'] = True;
         print $this->load->view("info_snippet", $data, True);
