@@ -318,8 +318,16 @@ class GPSParser
      **/
 	public function __construct()
 	{
-		$this->load_directory();
-		return true;
+        try
+        {
+        	$this->load_directory();
+        }
+        catch (Exception $e)
+        {
+            $CI =& get_instance();
+            show_error($e->getMessage(), 500);
+            die();
+        }
 	}
 
     /**
@@ -370,7 +378,7 @@ class GPSParser
 
         $directory = $CI->config->item('gps_directory');
 
-		if ($dh = opendir($directory)) 
+		if ($dh = @opendir($directory)) 
 		{
 			while (($file = readdir($dh)) !== false) 
 			{
@@ -393,6 +401,10 @@ class GPSParser
                                                 );
 			}
             closedir($dh);
+        }
+        else
+        {
+            throw new Exception("GPS Directory could not be read: '{$directory}'. Check your appconfig.php.");
         }
         masort($this->file_list, array('date'));
     }

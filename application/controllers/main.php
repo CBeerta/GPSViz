@@ -6,7 +6,8 @@ class Main extends Controller
 	{
         $per_page_home = $this->config->item('tracks_per_page_home');
         $per_page = $this->config->item('tracks_per_page');
-	    $files = $this->gpsparser->get_files($offset, $per_page_home);
+
+    	$files = $this->gpsparser->get_files($offset, $per_page_home);
 
         // Figure out the offsets to be able to jump to the right page on detail view	    
 	    $offset = 0;
