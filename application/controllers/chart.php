@@ -72,10 +72,12 @@ class Chart extends Controller
                     $min = round($trkpt->ele, 0);
                 }
             }
+
             if ($x++ > $resolution)
             {
                 $x = 0;
             }
+
             $distance += round($trkpt->distance_to_prev, 0);
         }
         if ($min > 10)
@@ -115,10 +117,12 @@ class Chart extends Controller
             {
                 $chartdata[(string) round($distance/1000, 1)] = round($trkpt->speed_to_prev * 3.6, 2);
             }
+
             if ($x++ > $resolution)
             {
                 $x = 0;
             }
+
             $distance += round($trkpt->distance_to_prev, 0);
         }
 

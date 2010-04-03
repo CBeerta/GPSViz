@@ -202,6 +202,13 @@ class GPS_Track
                                                     $trk[$index-1]->lon,
                                                     $trk[$index]->lat,
                                                     $trk[$index]->lon) * 1000;
+
+                if ($trk[$index]->distance_to_prev == 0)
+                {
+                    // GPS didn't move, thats not very usefull to us
+                    continue;
+                }
+
                 $trk[$index]->time_to_prev = $trk[$index]->time - $trk[$index-1]->time;
                 $this->distance += $trk[$index]->distance_to_prev;
                 
@@ -213,7 +220,6 @@ class GPS_Track
                         $this->top_speed = $trk[$index]->speed_to_prev;
                     }
                 }
-
 
                 // Find the Boundaries
                 if ($trk[$index]->lat > $right) 
@@ -236,6 +242,12 @@ class GPS_Track
             }
             $index++;
         }
+
+        if ($index == 0)
+        {
+            throw new Exception ("File {$this->filename} has 0 useable Track Points.");
+        }
+
         $this->boundaries = (object) array('west' => $left, 'east' => $right, 'north' => $top, 'south' => $bottom);
         $this->total_time_taken = $trk[count($trk)-1]->time - $trk[0]->time;
         $this->speed = $this->distance / $this->total_time_taken;
