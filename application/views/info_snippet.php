@@ -1,7 +1,8 @@
 <div id="info_snippet">
     <?php if (isset($draw_chart)): ?>
-    <div class="height_chart">
+    <div>
         <img src="<?php echo site_url("chart/height/{$active}");?>" width="500" height="200">
+        <img src="<?php echo site_url("chart/speed/{$active}");?>" width="500" height="200">
     </div>
     <?php endif; ?>
 

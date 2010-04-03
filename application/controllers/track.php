@@ -9,13 +9,16 @@ class Track extends Controller
         try
         {
             $data['file_list'] = $this->gpsparser->get_files($offset, $per_page);
-            $gps = $this->gpsparser->get($file);
         }
         catch (Exception $e)
         {
-            $CI =& get_instance();
             show_error($e->getMessage(), 500);
             die();
+        }
+
+        if ($file == Null)
+        {
+            $file = key($data['file_list']);
         }
 
         $data['offset'] = $offset;
@@ -31,6 +34,17 @@ class Track extends Controller
                         'cur_tag_close' => '</a>',
                         'uri_segment' => 3,
                     ));
+
+
+        try
+        {
+            $gps = $this->gpsparser->get($file);
+        }
+        catch (Exception $e)
+        {
+            show_error($e->getMessage(), 500);
+            die();
+        }
 
         $mid_point_lat = ($gps->boundaries->west + $gps->boundaries->east) / 2;
         $mid_point_lon = ($gps->boundaries->north + $gps->boundaries->south) / 2;
