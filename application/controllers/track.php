@@ -1,7 +1,15 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
+define("CHART_RESOLUTION", 100);
+
 class Track extends Controller
 {
+    /**
+     * Convert a array() to a javascript array for flot
+     *
+     * @param array array() with $k=>$v data
+     * @returns array
+     */
     private function _convert_for_flot($data)
     {
         foreach ($data as $k => $v)
@@ -11,9 +19,15 @@ class Track extends Controller
         return ("[".implode(',', $flot)."]");
     }
 
+    /**
+     * Generate the speed array
+     *
+     * @param object $gps object with a loaded track
+     * @returns array
+     */
     private function _speed_chart_data($gps)
     {
-        $resolution = round(count($gps->track) / 15, 0);
+        $resolution = round(count($gps->track) / CHART_RESOLUTION, 0);
         $min = 99999999999;
         $max = 0;
         $distance = $x = 0;
@@ -41,9 +55,15 @@ class Track extends Controller
         return ($chartdata);
     }
 
+    /**
+     * Generate the height array
+     *
+     * @param object $gps object with a loaded track
+     * @returns array
+     */
     private function _height_chart_data($gps)
     {
-        $resolution = round(count($gps->track) / 15, 0);
+        $resolution = round(count($gps->track) / CHART_RESOLUTION, 0);
         $min = 99999999999;
         $max = 0;
         $distance = $x = 0;
@@ -77,7 +97,13 @@ class Track extends Controller
         return ($chartdata);
     }
 
-	public function index($offset = 0, $file = Null, $view = 'map')
+    /**
+     * Main Track display page: Displays the GMap, with info snippet
+     *
+     * @param int offset for pagination
+     * @param string What is the gps->name
+     */
+	public function index($offset = 0, $file = Null)
 	{
         $per_page = $this->config->item('tracks_per_page');
 
@@ -134,24 +160,6 @@ class Track extends Controller
         
 	    $this->load->view("track_view", $data);
 	}
-
-    public function ajax($file)
-    {
-        try
-        {
-            $data['gps'] = $this->gpsparser->get($file, False);
-        }
-        catch (Exception $e)
-        {
-            $CI =& get_instance();
-            show_error($e->getMessage(), 500);
-            die();
-        }
-        $data['active'] = $file;
-        //$data['draw_chart'] = True;
-        print $this->load->view("info_snippet", $data, True);
-        exit;
-    }
 }
 
 ?>

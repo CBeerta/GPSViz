@@ -7,15 +7,17 @@
 
     $(function() {
         var chart_options = { 
-                points: { show: true},
+                points: { show: false},
                 lines: { show: true },
                 grid: { backgroundColor: '#fafafa' },
                 legend: { position: 'ne' },
+                y2axis: { tickFormatter: function(v, axis) { return v.toFixed(axis.tickDecimals) + "m" }},
+                xaxis: { tickFormatter: function(v, axis) { return v.toFixed(axis.tickDecimals) + "km" }},
             };
 
         $.plot($("#combined_chart"), 
-            [ { data: <?php echo $speed_chart_data; ?>, label: "Speed" },
-              { data: <?php echo $height_chart_data; ?>, label: "Height", yaxis: 2 }],
+            [ { data: <?php echo $height_chart_data; ?>, label: "Elevation", yaxis: 2 },
+              { data: <?php echo $speed_chart_data; ?>, label: "Speed" } ],
             chart_options);
     });
     </script>    

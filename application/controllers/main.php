@@ -2,6 +2,11 @@
 
 class Main extends Controller
 {
+    /**
+     * Main index page, displays a blog style list of tracks sorted by date
+     *
+     * @param int offset for pagination
+     */
 	public function index($offset = 0)
 	{
         $per_page_home = $this->config->item('tracks_per_page_home');
@@ -33,6 +38,30 @@ class Main extends Controller
 
         $this->load->view("main", $data);
     }
+
+    /**
+     * Returns the little info snippet loaded by an ajax request
+     *
+     * @param string $gps->name pointing to the track
+     */
+    public function ajax($file)
+    {
+        try
+        {
+            $data['gps'] = $this->gpsparser->get($file, False);
+        }
+        catch (Exception $e)
+        {
+            $CI =& get_instance();
+            show_error($e->getMessage(), 500);
+            die();
+        }
+        $data['active'] = $file;
+        //$data['draw_chart'] = False;
+        print $this->load->view("info_snippet", $data, True);
+        exit;
+    }
+
 }
 
 ?>

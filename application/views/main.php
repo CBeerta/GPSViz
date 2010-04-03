@@ -8,13 +8,14 @@
     <link rel="stylesheet" type="text/css" href="<?php echo base_url();?>files/style.css"> 
     <!-- js --> 
     <script type="text/javascript" src="<?php echo base_url();?>files/jquery.js"></script>
+    <script type="text/javascript" src="<?php echo base_url();?>files/flot/jquery.flot.js"></script>
     <script type="text/javascript">
     $(document) .ready(function(){
         $("div#info_snippet").each(function(index) {
             var snippet = $(this);
             var name = $(this).attr("name");
             
-            $.get('<?php echo site_url("track/ajax/");?>/' + name, function(data) {
+            $.get('<?php echo site_url("main/ajax/");?>/' + name, function(data) {
                 snippet.html(data);
             });
         });
