@@ -1,9 +1,24 @@
 <div id="info_snippet">
     <?php if (isset($draw_chart)): ?>
     <div>
-        <img src="<?php echo site_url("chart/height/{$active}");?>" width="500" height="200">
-        <img src="<?php echo site_url("chart/speed/{$active}");?>" width="500" height="200">
+        <div id="combined_chart" class="chart" style="width:500px;height:200px;"></div>
     </div>
+    <script id="source" language="javascript" type="text/javascript">
+
+    $(function() {
+        var chart_options = { 
+                points: { show: true},
+                lines: { show: true },
+                grid: { backgroundColor: '#fafafa' },
+                legend: { position: 'ne' },
+            };
+
+        $.plot($("#combined_chart"), 
+            [ { data: <?php echo $speed_chart_data; ?>, label: "Speed" },
+              { data: <?php echo $height_chart_data; ?>, label: "Height", yaxis: 2 }],
+            chart_options);
+    });
+    </script>    
     <?php endif; ?>
 
     <div>
@@ -19,4 +34,5 @@
     <div>
 
 </div>
+
 

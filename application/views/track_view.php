@@ -7,9 +7,8 @@
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/reset-fonts-grids/reset-fonts-grids.css"> 
     <link rel="stylesheet" type="text/css" href="<?php echo base_url();?>files/style.css"> 
     <!-- js --> 
-    <!--
     <script type="text/javascript" src="<?php echo base_url();?>files/jquery.js"></script>
-    -->
+    <script type="text/javascript" src="<?php echo base_url();?>files/flot/jquery.flot.js"></script>
     <!-- google map -->
     <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $google_maps_key;?>&amp;hl=en"></script>
 </head>

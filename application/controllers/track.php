@@ -2,6 +2,81 @@
 
 class Track extends Controller
 {
+    private function _convert_for_flot($data)
+    {
+        foreach ($data as $k => $v)
+        {
+            $flot[] = '['.$k.','.$v.']';
+        }
+        return ("[".implode(',', $flot)."]");
+    }
+
+    private function _speed_chart_data($gps)
+    {
+        $resolution = round(count($gps->track) / 15, 0);
+        $min = 99999999999;
+        $max = 0;
+        $distance = $x = 0;
+
+        foreach (array_merge($gps->track, array($gps->track[count($gps->track)-1])) as $trkpt)
+        {
+            if ($trkpt->speed_to_prev <= 0)
+            {
+                continue;
+            }
+
+            if ($x == 0)
+            {
+                $chartdata[(string) round($distance/1000, 1)] = round($trkpt->speed_to_prev * 3.6, 2);
+            }
+
+            if ($x++ > $resolution)
+            {
+                $x = 0;
+            }
+
+            $distance += round($trkpt->distance_to_prev, 0);
+        }
+        
+        return ($chartdata);
+    }
+
+    private function _height_chart_data($gps)
+    {
+        $resolution = round(count($gps->track) / 15, 0);
+        $min = 99999999999;
+        $max = 0;
+        $distance = $x = 0;
+
+        foreach (array_merge($gps->track, array($gps->track[count($gps->track)-1])) as $trkpt)
+        {
+            if ($x == 0)
+            {
+                $chartdata[(string) round($distance/1000, 1)] = round($trkpt->ele, 0);
+                if ($trkpt->ele > $max) 
+                {
+                    $max = round($trkpt->ele + 10, 0);
+                }
+                if ($trkpt->ele < $min)
+                {
+                    $min = round($trkpt->ele, 0);
+                }
+            }
+
+            if ($x++ > $resolution)
+            {
+                $x = 0;
+            }
+
+            $distance += round($trkpt->distance_to_prev, 0);
+        }
+        if ($min > 10)
+        {
+            $min -= 10;
+        }
+        return ($chartdata);
+    }
+
 	public function index($offset = 0, $file = Null, $view = 'map')
 	{
         $per_page = $this->config->item('tracks_per_page');
@@ -52,6 +127,8 @@ class Track extends Controller
         $data['midpoint'] = "{$mid_point_lat}, {$mid_point_lon}";
         $data['gps'] = $gps;
         $data['draw_chart'] = True;
+        $data['speed_chart_data'] = $this->_convert_for_flot($this->_speed_chart_data($gps));
+        $data['height_chart_data'] = $this->_convert_for_flot($this->_height_chart_data($gps));
         $data['content'] = $this->load->view("map_snippet", $data, True);
         $data['content'] .= $this->load->view("info_snippet", $data, True);
         

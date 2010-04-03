@@ -48,6 +48,12 @@ a {
     color: #222;
 }
 
+/* Info Snippet */
+#info_snippet .chart {
+    float: right;
+    margin: 2px;
+}
+
 #info_snippet {
     padding: 5px;
     clear: both;
@@ -73,10 +79,6 @@ a {
     margin-right: auto;
 }
 
-/* Info Snippet */
-#info_snippet img {
-    float: right;
-}
 
 /* Header with navigation*/
 #hd {
