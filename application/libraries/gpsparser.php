@@ -181,6 +181,7 @@ class GPS_Track
 
         foreach ($children->trk->trkseg->trkpt as $trkpt)
         {
+
             $attr = $trkpt->attributes();
             $trk[$index] = (object) array(
                     'lat' => (float) $attr->lat, 
@@ -195,6 +196,14 @@ class GPS_Track
                     'speed_to_prev' => 0,
                 );
 
+            if ($trk[$index]->fix != '3d' || $trk[$index]->ele == 0)
+            {
+                // dont have 3d fix or 0 altitude we assume we have nothing
+                // Write a Null here, so flot can just ignore the values. 
+                // Gives better height charts this way
+                $trk[$index]->ele = Null;
+            }
+
             if ($index > 0)
             {
                 $trk[$index]->distance_to_prev = $CI->geocalc->EllipsoidDistance(
@@ -206,6 +215,9 @@ class GPS_Track
                 if ($trk[$index]->distance_to_prev == 0)
                 {
                     // GPS didn't move, thats not very usefull to us
+                    // As we don't increase $index, we just overwrite this one with the next
+                    // essentially dropping the trackpoint
+                    // FIXME: Is this "good behaviour"? Certainly makes my tracks look more usefull.
                     continue;
                 }
 
@@ -238,7 +250,6 @@ class GPS_Track
                 {
                     $bottom = $trk[$index]->lon;
                 }
-
             }
             $index++;
         }
