@@ -14,6 +14,11 @@ class Track extends Controller
     {
         foreach ($data as $k => $v)
         {
+            if ($v == Null)
+            {
+                $flot[] = 'null';
+                continue;
+            }
             $flot[] = '['.$k.','.$v.']';
         }
         return ("[".implode(',', $flot)."]");
