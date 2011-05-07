@@ -3,24 +3,6 @@
     <div>
         <div id="combined_chart" class="chart" style="width:500px;height:200px;"></div>
     </div>
-    <script id="source" language="javascript" type="text/javascript">
-
-    $(function() {
-        var chart_options = { 
-                points: { show: false},
-                lines: { show: true },
-                grid: { backgroundColor: '#fafafa' },
-                legend: { position: 'ne' },
-                y2axis: { tickFormatter: function(v, axis) { return v.toFixed(axis.tickDecimals) + "m" }},
-                xaxis: { tickFormatter: function(v, axis) { return v.toFixed(axis.tickDecimals) + "km" }},
-            };
-
-        $.plot($("#combined_chart"), 
-            [ { data: <?php echo $height_chart_data; ?>, label: "Elevation", yaxis: 2 },
-              { data: <?php echo $speed_chart_data; ?>, label: "Speed" } ],
-            chart_options);
-    });
-    </script>    
     <?php endif; ?>
 
     <div>
@@ -33,7 +15,7 @@
         <tr><th>Pace:</th><td><?php echo number_format(60 / ($gps->speed * 3.6), 0); ?> min/km</td></tr>
         <?php endif; ?>
         <tr><th>Top Speed:</th><td><?php echo number_format($gps->top_speed * 3.6, 2); ?> km/h</td></tr>
-        <tr><th>Time Taken:</th><td><?php echo date_diff($gps->total_time_taken); ?></td></tr>
+        <tr><th>Time Taken:</th><td><?php echo seconds_to_words($gps->total_time_taken); ?></td></tr>
         <tr><th>Coordinates:</th><td><?php echo $gps->coordinates; ?></td></tr>
     </table>
     <div>

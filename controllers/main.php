@@ -25,7 +25,9 @@ function main_index($offset = 0)
         $offset+=$per_page;
     }	  
     $data['file_list'] = $files;
+    
 /*
+    FIXME: Yeah, pagination and stuff
     $this->pagination->initialize(array(
                     'base_url' => site_url('main/index'), 
                     'total_rows' => count($this->gpsparser->file_list), 
@@ -37,6 +39,11 @@ function main_index($offset = 0)
                 ));
 */
     //$this->load->view("main", $data);
+    
+    set('file_list', $files);
+    set('title', 'Overview');
+    
+    return html('main.html.php');
 }
 
 /**
@@ -44,21 +51,23 @@ function main_index($offset = 0)
  *
  * @param string $gps->name pointing to the track
  */
-function main_ajax($file)
+function main_ajax()
 {
+    $gpsparser = option('gpsparser');
+    $file = params('file');
+
     try
     {
-        $data['gps'] = $this->gpsparser->get($file, False);
+        $gps = $gpsparser->get($file, False);
     }
     catch (Exception $e)
     {
-        $CI =& get_instance();
-        show_error($e->getMessage(), 500);
-        die();
+        die($e->getMessage());
     }
-    $data['active'] = $file;
     //$data['draw_chart'] = False;
-    print $this->load->view("info_snippet", $data, True);
-    exit;
+    set('gps', $gps);
+    //set('draw_chart', False);
+    
+    return render('info_snippet.html.php', null);    
 }
 

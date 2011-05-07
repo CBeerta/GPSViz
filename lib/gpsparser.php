@@ -14,9 +14,6 @@ DEFINE("TMP_FILE_VER", "0.0.3");
 /**
  * GPS_Track is a representation of a single Track
  *
- * @param $directory directory holding the gps files
- * @param $file filename to open
- * @param $type type of the gpstrack
  *
  */
 class GPS_Track
@@ -117,7 +114,7 @@ class GPS_Track
     * @param string $file
     * @param string $type
     */        
-    public function init($directory, $file, $type)
+    public function setup($directory, $file, $type)
     {
         $this->filename = "{$directory}/{$file}";
         if (is_dir($directory) && is_readable($this->filename))
@@ -183,13 +180,12 @@ class GPS_Track
      */
     public function load()
     {
-        $gpsbabel = $CI->config->item('gpsbabel');
-
-        $cmd = "{$gpsbabel} -i {$this->file_type} -f '{$this->filename}' -c UTF-8 -o gpx,gpxver=1.1 -t -F -";
+        $cmd = "{$this->gpsbabel} -i {$this->file_type} -f '{$this->filename}' -c UTF-8 -o gpx,gpxver=1.1 -t -F -";
+        
         exec($cmd, $output, $ret_var);
         if (!($xml = @simplexml_load_string(implode("\n", $output))))
         {
-            throw new Exception("Unable to load {$this->filename}. Is {$gpsbabel} available?");
+            throw new Exception("Unable to load {$this->filename}. Is {$this->gpsbabel} available?");
         }
 
         $children = $xml->children();
@@ -237,7 +233,7 @@ class GPS_Track
 
             if ($index > 0)
             {
-                $trk[$index]->distance_to_prev = $CI->geocalc->EllipsoidDistance(
+                $trk[$index]->distance_to_prev = GeoCalc::EllipsoidDistance(
                                                     $trk[$index-1]->lat,
                                                     $trk[$index-1]->lon,
                                                     $trk[$index]->lat,
@@ -301,7 +297,7 @@ class GPS_Track
 
         $this->is_loaded = True;
 
-        $tmp_dir = $CI->config->item('tmp_directory');
+        $tmp_dir = $this->temp_directory;
         @file_put_contents("{$tmp_dir}/{$this->file}.info", serialize(array(
                                 'file_ver' => TMP_FILE_VER,
                                 'date' => $this->date,
@@ -396,8 +392,13 @@ class GPSParser
      *
      * @return bool
      **/
-    public function set_directory($directory)
+    public function setup($directory)
     {
+        if ( is_null($this->gpsbabel) || is_null($this->temp_directory) )
+        {
+            throw new Exception ("gpsbabel or tempdirectory is not set");
+        }
+        
         $this->directory = $directory;
         try
         {   
@@ -489,8 +490,8 @@ class GPSParser
                 $this->tracks[md5($file)] =& new GPS_Track();
                 $this->tracks[md5($file)]->set_temp_directory($this->temp_directory);
                 $this->tracks[md5($file)]->set_gpsbabel($this->gpsbabel);
-                $this->tracks[md5($file)]->init($directory, $file, $type);
-                
+                $this->tracks[md5($file)]->setup($directory, $file, $type);
+
                 $this->file_list[md5($file)] = array(
                                                 'directory' => $directory,
                                                 'file' => $file,
@@ -529,8 +530,11 @@ class GPSParser
         {
             $file = $this->file_list[$name];
             if (!isset($this->tracks[$name]))
-            {
-                $this->tracks[$name] =& new GPS_Track($file['directory'], $file['file'], $file['type']);
+            {   
+                $this->tracks[$name] =& new GPS_Track();
+                $this->tracks[$name]->set_temp_directory($this->temp_directory);
+                $this->tracks[$name]->set_gpsbabel($this->gpsbabel);
+                $this->tracks[$name]->setup($file['directory'], $file['file'], $file['type']);
             }
 
             if ($this->tracks[$name]->is_loaded == False && $do_load == True)

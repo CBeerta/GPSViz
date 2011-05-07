@@ -11,8 +11,8 @@
        Remove this if you use the .htaccess -->
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  <title><?php echo $title; ?> - Portal</title>
-  <meta name="description" content="Portal">
+  <title><?php echo $title; ?> - GPSViz</title>
+  <meta name="description" content="GPSViz">
   <meta name="author" content="Claus Beerta">
 
   <!-- Mobile viewport optimized: j.mp/bplateviewport -->
@@ -63,8 +63,36 @@
   <script>window.jQuery || document.write("<script src='js/libs/jquery-1.5.1.min.js'>\x3C/script>")</script>
 
   <!-- scripts concatenated and minified via ant build script-->
-  <script src="js/plugins.js"></script>
-  <script src="js/script.js"></script>
+  <script src="/flot/jquery.flot.js"></script>
+  <script src="/js/plugins.js"></script>
+  <script src="/js/script.js"></script>
+  <?php if (isset($google_maps_key)): ?>
+  <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $google_maps_key;?>&amp;hl=en"></script>
+  <script>
+    $(document).ready(function(){
+      initialize();
+    });
+  </script>
+  <?php endif; ?>
+  <?php if (isset($height_chart_data) && isset($speed_chart_data)): ?>
+  <script>
+  $(function() {
+    var chart_options = { 
+            points: { show: false},
+            lines: { show: true },
+            grid: { backgroundColor: '#fafafa' },
+            legend: { position: 'ne' },
+            y2axis: { tickFormatter: function(v, axis) { return v.toFixed(axis.tickDecimals) + "m" }},
+            xaxis: { tickFormatter: function(v, axis) { return v.toFixed(axis.tickDecimals) + "km" }},
+        };
+
+    $.plot($("#combined_chart"), 
+        [ { data: <?php echo $height_chart_data; ?>, label: "Elevation", yaxis: 2 },
+          { data: <?php echo $speed_chart_data; ?>, label: "Speed" } ],
+        chart_options);
+    });
+  </script>
+  <?php endif; ?>
   <!-- end scripts-->
 
 </body>

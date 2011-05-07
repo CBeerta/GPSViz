@@ -106,18 +106,18 @@ function _height_chart_data($gps)
  * @param int offset for pagination
  * @param string What is the gps->name
  */
-function index($offset = 0, $file = Null)
+function track_index($offset = 0, $file = Null)
 {
-    $per_page = $this->config->item('tracks_per_page');
+    $per_page = option('tracks_per_page');
+    $gpsparser = option('gpsparser');
 
     try
     {
-        $data['file_list'] = $this->gpsparser->get_files($offset, $per_page);
+        $file_list = $gpsparser->get_files($offset, $per_page);
     }
     catch (Exception $e)
     {
-        show_error($e->getMessage(), 500);
-        die();
+        die($e->getMessage());
     }
 
     if ($file == Null)
@@ -125,11 +125,12 @@ function index($offset = 0, $file = Null)
         $file = key($data['file_list']);
     }
 
-    $data['offset'] = $offset;
-    $data['active'] = $file;
-    $data['google_maps_key'] = $this->config->item('google_maps_key');
+    set('offset', $offset);
+    set('active', $file);
+    set('google_maps_key', option('google_maps_key'));
 
-    $this->pagination->initialize(array(
+/*   
+     $this->pagination->initialize(array(
                     'base_url' => site_url('track/index'), 
                     'total_rows' => count($this->gpsparser->file_list), 
                     'per_page' => $per_page, 
@@ -138,28 +139,30 @@ function index($offset = 0, $file = Null)
                     'cur_tag_close' => '</a>',
                     'uri_segment' => 3,
                 ));
-
+*/
 
     try
     {
-        $gps = $this->gpsparser->get($file);
+        $gps = $gpsparser->get($file);
     }
     catch (Exception $e)
     {
-        show_error($e->getMessage(), 500);
-        die();
+        die($e->getMessage());
     }
 
     $mid_point_lat = ($gps->boundaries->west + $gps->boundaries->east) / 2;
     $mid_point_lon = ($gps->boundaries->north + $gps->boundaries->south) / 2;
+    set('title', $gps->name);
+    set('midpoint', "{$mid_point_lat}, {$mid_point_lon}");
+    set('gps', $gps);
+    set('draw_chart', True);
+    set('speed_chart_data', _convert_for_flot(_speed_chart_data($gps)) );
+    set('height_chart_data', _convert_for_flot(_height_chart_data($gps)) );
 
-    $data['midpoint'] = "{$mid_point_lat}, {$mid_point_lon}";
-    $data['gps'] = $gps;
-    $data['draw_chart'] = True;
-    $data['speed_chart_data'] = $this->_convert_for_flot($this->_speed_chart_data($gps));
-    $data['height_chart_data'] = $this->_convert_for_flot($this->_height_chart_data($gps));
-    $data['content'] = $this->load->view("map_snippet", $data, True);
-    $data['content'] .= $this->load->view("info_snippet", $data, True);
+    $content = render("map_snippet.html.php", null);
+    $content .= render("info_snippet.html.php", null);
     
-    $this->load->view("track_view", $data);
+    set('content', $content);
+    
+    return html('track_view.html.php');
 }

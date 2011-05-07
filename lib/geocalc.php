@@ -17,34 +17,36 @@
 
 class GeoCalc {
 
-  var $PI = 3.14159265359;
-  var $TWOPI = 6.28318530718;
-  var $DE2RA = 0.01745329252;
-  var $RA2DE = 57.2957795129;
-  var $ERAD = 6378.135;
-  var $ERADM = 6378135.0;
-  var $AVG_ERAD = 6371.0;
-  var $EPS = 0.000000000005;
-  var $KM2MI = 0.621371;
-  var $FLATTENING =  0;
+  const PI = 3.14159265359;
+  const TWOPI = 6.28318530718;
+  const DE2RA = 0.01745329252;
+  const RA2DE = 57.2957795129;
+  const ERAD = 6378.135;
+  const ERADM = 6378135.0;
+  const AVG_ERAD = 6371.0;
+  const EPS = 0.000000000005;
+  const KM2MI = 0.621371;
+  const FLATTENING = 0.00335277945416750486;
 
-  function GeoCalc() {
-  	$this->FLATTENING = 1.0/298.26;  // Earth flattening
+/*
+  public static function __construct () {
+  	self::FLATTENING = 1.0/298.26;  // Earth flattening
                                      // (WGS 1972)
     return;
   }
+*/
 
-  function GCDistance($lat1, $lon1, $lat2, $lon2) {
-    $lat1 *= $this->DE2RA;
-    $lon1 *= $this->DE2RA;
-    $lat2 *= $this->DE2RA;
-    $lon2 *= $this->DE2RA;
+  public static function GCDistance($lat1, $lon1, $lat2, $lon2) {
+    $lat1 *= self::DE2RA;
+    $lon1 *= self::DE2RA;
+    $lat2 *= self::DE2RA;
+    $lon2 *= self::DE2RA;
     $d = sin($lat1)*sin($lat2) + cos($lat1)*cos($lat2)*cos($lon1 - $lon2);
-    return ($this->AVG_ERAD * acos($d));
+    return (self::AVG_ERAD * acos($d));
   }
 
 
-  function GCAzimuth($lat1, $lon1, $lat2, $lon2) {
+  public static function GCAzimuth($lat1, $lon1, $lat2, $lon2) {
     $result = 0.0;
 
     $ilat1 = intval(0.50 + $lat1 * 360000.0);
@@ -52,10 +54,10 @@ class GeoCalc {
     $ilon1 = intval(0.50 + $lon1 * 360000.0);
     $ilon2 = intval(0.50 + $lon2 * 360000.0);
 
-    $lat1 *= $this->DE2RA;
-    $lon1 *= $this->DE2RA;
-    $lat2 *= $this->DE2RA;
-    $lon2 *= $this->DE2RA;
+    $lat1 *= self::DE2RA;
+    $lon1 *= self::DE2RA;
+    $lat2 *= self::DE2RA;
+    $lon2 *= self::DE2RA;
 
     if (($ilat1 == $ilat2) && ($ilon1 == $ilon2)) {
       return result;
@@ -73,7 +75,7 @@ class GeoCalc {
     else {
       $c = acos(sin($lat2)*sin($lat1) + cos($lat2)*cos($lat1)*cos(($lon2-$lon1)));
       $A = asin(cos($lat2)*sin(($lon2-$lon1))/sin($c));
-      $result = ($A * $this->RA2DE);
+      $result = ($A * self::RA2DE);
 
 
       if (($ilat2 > $ilat1) && ($ilon2 > $ilon1)) {
@@ -93,11 +95,11 @@ class GeoCalc {
     return $result;
   }
 
-  function ApproxDistance($lat1, $lon1, $lat2, $lon2) {
-    $lat1 = $this->DE2RA * $lat1;
-    $lon1 = -$this->DE2RA * $lon1;
-    $lat2 = $this->DE2RA * $lat2;
-    $lon2 = -$this->DE2RA * $lon2;
+  public static function ApproxDistance($lat1, $lon1, $lat2, $lon2) {
+    $lat1 = self::DE2RA * $lat1;
+    $lon1 = -self::DE2RA * $lon1;
+    $lat2 = self::DE2RA * $lat2;
+    $lon2 = -self::DE2RA * $lon2;
 
     $F = ($lat1 + $lat2) / 2.0;
     $G = ($lat1 - $lat2) / 2.0;
@@ -116,16 +118,16 @@ class GeoCalc {
     $R = sqrt(($S*$C))/$W;
     $H1 = (3 * $R - 1.0) / (2.0 * $C);
     $H2 = (3 * $R + 1.0) / (2.0 * $S);
-    $D = 2 * $W * $this->ERAD;
-    $return = ($D * (1 + $this->FLATTENING * $H1 * $sinf*$sinf*$cosg*$cosg - $this->FLATTENING*$H2*$cosf*$cosf*$sing*$sing));
+    $D = 2 * $W * self::ERAD;
+    $return = ($D * (1 + self::FLATTENING * $H1 * $sinf*$sinf*$cosg*$cosg - self::FLATTENING*$H2*$cosf*$cosf*$sing*$sing));
     return $return;
   }
 
-  function EllipsoidDistance($lat1, $lon1, $lat2, $lon2) {
+  public static function EllipsoidDistance($lat1, $lon1, $lat2, $lon2) {
 	$distance = 0.0;
 	$faz = 0.0;
 	$baz = 0.0;
-	$r = 1.0 - $this->FLATTENING;
+	$r = 1.0 - self::FLATTENING;
 	$tu1 = 0.0;
 	$tu2 = 0.0;
 	$cu1 = 0.0;
@@ -149,10 +151,10 @@ class GeoCalc {
 
 	if(($lon1 == $lon2) && ($lat1 == $lat2))
 	  return $distance;
-	$lon1 *= $this->DE2RA;
-	$lon2 *= $this->DE2RA;
-	$lat1 *= $this->DE2RA;
-	$lat2 *= $this->DE2RA;
+	$lon1 *= self::DE2RA;
+	$lon2 *= self::DE2RA;
+	$lat1 *= self::DE2RA;
+	$lat2 *= self::DE2RA;
 
 	$cosy1 = cos($lat1);
 	$cosy2 = cos($lat2);
@@ -171,7 +173,7 @@ class GeoCalc {
 	$baz = $distance * $tu2;
 	$faz = $baz * $tu1;
 
-   while(abs($d - $x) > $this->EPS) {
+   while(abs($d - $x) > self::EPS) {
 		$sx = sin($x);
 		$cx = cos($x);
 		$tu1 = $cu2 * $sx;
@@ -184,10 +186,10 @@ class GeoCalc {
 		$cz = $faz + $faz;
 		if($c2a > 0.0) $cz = - $cz / $c2a + $cy;
 		$e = $cz * $cz * 2.0 - 1.0;
-		$c = ((-3.0 * $c2a + 4.0) * $this->FLATTENING + 4.0) * $c2a * $this->FLATTENING / 16.0;
+		$c = ((-3.0 * $c2a + 4.0) * self::FLATTENING + 4.0) * $c2a * self::FLATTENING / 16.0;
 		$d = $x;
 		$x = (($e * $cy * $c + $cz) * $sy * $c + $y) * $sa;
-		$x = (1.0 - $c) * $x * $this->FLATTENING + $lon2 - $lon1;
+		$x = (1.0 - $c) * $x * self::FLATTENING + $lon2 - $lon1;
 	}
 
 	$x = sqrt((1.0 / $r / $r - 1.0) * $c2a + 1.0) + 1.0;
@@ -197,27 +199,27 @@ class GeoCalc {
 	$d = (0.375 * $x * $x - 1.0) * $x;
 	$x = $e * $cy;
 	$distance = 1.0 - $e - $e;
-	$distance = (((($sy * $sy * 4.0 - 3.0) * $distance * $cz * $d / 6.0 - $x) * $d / 4.0 + $cz) * $sy * $d + $y) * $c * $this->ERAD * $r;
+	$distance = (((($sy * $sy * 4.0 - 3.0) * $distance * $cz * $d / 6.0 - $x) * $d / 4.0 + $cz) * $sy * $d + $y) * $c * self::ERAD * $r;
 
     return $distance;
   }
 
-  function getKmPerLonAtLat($dLatitude) {
+  public static function getKmPerLonAtLat($dLatitude) {
     // Thanks to Eric Iverson for this correction!  Must convert degrees to radians...
-    $dLatitude *= $this->DE2RA;
+    $dLatitude *= self::DE2RA;
     return 111.321 * cos($dLatitude);
   }
 
-  function getLonPerKmAtLat($dLatitude) {
-    return 1 / $this->getKmPerLonAtLat($dLatitude);
+  public static function getLonPerKmAtLat($dLatitude) {
+    return 1 / self::getKmPerLonAtLat($dLatitude);
   }
 
-  function getKmPerLat() {
+  public static function getKmPerLat() {
     return 111.000;
   }
 
-  function getLatPerKm() {
-    return 1 / $this->getKmPerLat();
+  public static function getLatPerKm() {
+    return 1 / self::getKmPerLat();
   }
 
 }
