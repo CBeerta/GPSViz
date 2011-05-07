@@ -19,12 +19,11 @@ function configure()
     $gpsparser->setup($config['gps_directory']);
     
     option('gpsparser', $gpsparser);
-    option('debug', true);
+    option('debug', false);
     option('views_dir', __DIR__.'/views');
     option('controllers_dir', __DIR__.'/controllers');
     option('lib_dir', __DIR__.'/lib');
     option('public_dir', __DIR__.'/public');
-    option('base_uri', dirname($_SERVER['SCRIPT_NAME']));
 }
 
 function not_found($errno, $errstr, $errfile=null, $errline=null)
@@ -46,13 +45,6 @@ function not_found($errno, $errstr, $errfile=null, $errline=null)
     }
 }
 
-function after($output) 
-{
-    $time = number_format( (float)substr(microtime(), 0, 10) - LIM_START_MICROTIME, 6);
-    $output .= "<!-- page rendered in $time sec., on " . date(DATE_RFC822)."-->";
-    return $output;
-}
-
 layout('base.html.php');
 
 dispatch_get('/', 'main_index');
@@ -62,6 +54,5 @@ dispatch_get('/main/ajax/:file', 'main_ajax');
 dispatch_get('/track/index/:file', 'track_index');
 
 run();
-
 
 

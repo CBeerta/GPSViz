@@ -57,7 +57,7 @@
   <!-- scripts concatenated and minified via ant build script-->
   <script src="<?php echo url_for('flot/jquery.flot.js') ;?>"></script>
   <script src="<?php echo url_for('js/plugins.js') ;?>"></script>
-  <script src="<?php echo url_for('js/script.js') ;?>"></script>
+  <!--script src="<?php echo url_for('js/script.js') ;?>"></script-->
   
   <?php if (isset($google_maps_key)): ?>
   <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $google_maps_key;?>&amp;hl=en"></script>
@@ -86,6 +86,21 @@
     });
   </script>
   <?php endif; ?>
+  <script>
+    $(document).ready(function() {
+        $("div#info_snippet").each(function(index) 
+        {
+            var snippet = $(this);
+            var name = $(this).attr("name");
+            if (name) 
+            {
+                $.get('<?php echo url_for('main/ajax/');?>/' + name, function(data) {
+                    snippet.html(data);
+                });
+            }
+        });
+    });
+  </script>
   <!-- end scripts-->
 
 </body>
