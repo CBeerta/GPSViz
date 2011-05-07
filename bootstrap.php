@@ -24,7 +24,7 @@ function configure()
     option('controllers_dir', __DIR__.'/controllers');
     option('lib_dir', __DIR__.'/lib');
     option('public_dir', __DIR__.'/public');
-    #option('base_uri', dirname($_SERVER['SCRIPT_NAME']));
+    option('base_uri', dirname($_SERVER['SCRIPT_NAME']));
 }
 
 function not_found($errno, $errstr, $errfile=null, $errline=null)
@@ -59,7 +59,7 @@ dispatch_get('/', 'main_index');
 dispatch_get('/:offset', 'main_index');
 dispatch_get('/main/ajax/:file', 'main_ajax');
 
-dispatch_get('/track/index/:offset/:file', 'track_index');
+dispatch_get('/track/index/:file', 'track_index');
 
 run();
 

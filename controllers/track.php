@@ -106,40 +106,15 @@ function _height_chart_data($gps)
  * @param int offset for pagination
  * @param string What is the gps->name
  */
-function track_index($offset = 0, $file = Null)
+function track_index()
 {
     $per_page = option('tracks_per_page');
     $gpsparser = option('gpsparser');
+    
+    $file = params('file');
 
-    try
-    {
-        $file_list = $gpsparser->get_files($offset, $per_page);
-    }
-    catch (Exception $e)
-    {
-        die($e->getMessage());
-    }
-
-    if ($file == Null)
-    {
-        $file = key($data['file_list']);
-    }
-
-    set('offset', $offset);
     set('active', $file);
     set('google_maps_key', option('google_maps_key'));
-
-/*   
-     $this->pagination->initialize(array(
-                    'base_url' => site_url('track/index'), 
-                    'total_rows' => count($this->gpsparser->file_list), 
-                    'per_page' => $per_page, 
-                    'num_links' => 4,
-                    'cur_tag_open' => '<a href="#" style="font-weight: bold; text-decoration: underline;">',
-                    'cur_tag_close' => '</a>',
-                    'uri_segment' => 3,
-                ));
-*/
 
     try
     {

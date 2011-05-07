@@ -34,17 +34,15 @@
 
   <div id="container">
     <header>
-        <h1>GPSViz</h1><small>Activity Log</small>
+        <h1><a href="<?php echo url_for('/') ;?>">GPSViz</a></h1><small>Activity Log</small>
         <p><?php #echo $this->pagination->create_links(); ?></p>
     </header>
-    <nav>
-    </nav>
     <div id="main" role="main">
-        <br />
         <?php echo $content; ?>
     </div>
+    <div class="clearfix"/>
     <footer>
-        <p>GPSViz &copy; 2010 Claus Beerta &lt;<a href="mailto:claus@beerta.de">claus@beerta.de</a>&gt;</p>
+        <p>GPSViz &copy; 2010-2011 Claus Beerta &lt;<a href="mailto:claus@beerta.de">claus@beerta.de</a>&gt;</p>
     </footer>
     <br />
   </div> <!--! end of #container -->
