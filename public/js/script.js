@@ -9,7 +9,7 @@ $(document).ready(function() {
         var name = $(this).attr("name");
         if (name) 
         {
-            $.get('/main/ajax/' + name, function(data) {
+            $.get('/?/main/ajax/' + name, function(data) {
                 snippet.html(data);
             });
         }

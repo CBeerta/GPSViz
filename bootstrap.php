@@ -7,46 +7,43 @@ require_once __DIR__.'/lib/gpsparser.php';
 
 function configure() 
 {
-    // FIXME: should probalby put these into an ini file 
-    $gps_directory = '/home/claus/Documents/GPS-Files';
-    $temp_directory = '/var/tmp';
-    $gpsbabel = '/usr/bin/gpsbabel';
+    $config = parse_ini_file(__DIR__."/config.ini");
 
-    option('google_maps_key', 'ABQIAAAAOXwIs0kAMCTT4R_LT2qceBQ2GADgm1ezMFVJ6cO3aik9EkAcBRRENvrod5uF0B-dTwVPde0g0By6Cg');
-    option('google_maps_key', 'ABQIAAAAOXwIs0kAMCTT4R_LT2qceBQxyyC-DsmYy5NhFzDjM_TNT5FDNhSMPkJ7bWPqApF0OMojBtpbhf6oSQ');
-
-
-    /**
-     * How many tracks to show in the pagination on the detail track view
-     */
-    option('tracks_per_page', 5);
-
-    /**
-     * How many tracks to show on the home page
-     */
-    option('tracks_per_page_home', 10);
+    option('google_maps_key', $config['google_maps_key']);
+    option('tracks_per_page', $config['tracks_per_page']);
+    option('tracks_per_page_home', $config['tracks_per_page_home']);
 
     $gpsparser = new GPSParser();
-    $gpsparser->set_temp_directory('/var/tmp');
-    $gpsparser->set_gpsbabel('/usr/bin/gpsbabel');
-    $gpsparser->setup($gps_directory);
-
+    $gpsparser->set_temp_directory($config['temp_directory']);
+    $gpsparser->set_gpsbabel($config['gpsbabel']);
+    $gpsparser->setup($config['gps_directory']);
+    
     option('gpsparser', $gpsparser);
     option('debug', true);
     option('views_dir', __DIR__.'/views');
     option('controllers_dir', __DIR__.'/controllers');
     option('lib_dir', __DIR__.'/lib');
-    option('base_uri', '/');
+    option('public_dir', __DIR__.'/public');
+    #option('base_uri', dirname($_SERVER['SCRIPT_NAME']));
 }
 
 function not_found($errno, $errstr, $errfile=null, $errline=null)
 {
-    set('errno', $errno);
-    set('errstr', $errstr);
-    set('errfile', $errfile);
-    set('errline', $errline);
-    set('title', "{$errno} - {$errstr}");
-    return html("404.html.php");
+    list ($_file) = explode('?', __DIR__.'/public' . $_SERVER['QUERY_STRING']);
+    if ( file_exists($_file) ) 
+    {
+        status(200);
+        return render_file($_file, null);
+    }
+    else
+    {
+        set('errno', $errno);
+        set('errstr', $errstr);
+        set('errfile', $errfile);
+        set('errline', $errline);
+        set('title', "{$errno} - {$errstr}");
+        return html("404.html.php");
+    }
 }
 
 function after($output) 
@@ -63,7 +60,6 @@ dispatch_get('/:offset', 'main_index');
 dispatch_get('/main/ajax/:file', 'main_ajax');
 
 dispatch_get('/track/index/:offset/:file', 'track_index');
-
 
 run();
 

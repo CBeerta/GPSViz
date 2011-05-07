@@ -19,17 +19,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Place favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
-  <link rel="shortcut icon" href="/favicon.ico">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="shortcut icon" href="<?php echo url_for('favicon.ico') ;?>">
+  <link rel="apple-touch-icon" href="<?php echo url_for('apple-touch-icon.png') ;?>">
 
   <!-- CSS: implied media="all" -->
-  <link rel="stylesheet" href="/css/style.css?v=2">
-
-  <!-- Uncomment if you are specifically targeting less enabled mobile browsers
-  <link rel="stylesheet" media="handheld" href="css/handheld.css?v=2">  -->
+  <link rel="stylesheet" href="<?php echo url_for('css/style.css') ;?>?v=2">
 
   <!-- All JavaScript at the bottom, except for Modernizr which enables HTML5 elements & feature detects -->
-  <script src="/js/libs/modernizr-1.7.min.js"></script>
+  <!--script src="<?php echo url_for('js/libs/modernizr-1.7.min.js') ;?>"></script-->
 
 </head>
 
@@ -37,14 +34,11 @@
 
   <div id="container">
     <header>
-        <div id="menu">
-            <h1>GPSViz</h1> <small>Activity Log</small>
-            <p><?php #echo $this->pagination->create_links(); ?></p>
-        </div>
-        <div class="clearfix">
-            <?php echo isset($header) ? $header : ''; ?>
-        </div>
+        <h1>GPSViz</h1><small>Activity Log</small>
+        <p><?php #echo $this->pagination->create_links(); ?></p>
     </header>
+    <nav>
+    </nav>
     <div id="main" role="main">
         <br />
         <?php echo $content; ?>
@@ -60,12 +54,13 @@
 
   <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if necessary -->
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
-  <script>window.jQuery || document.write("<script src='js/libs/jquery-1.5.1.min.js'>\x3C/script>")</script>
+  <script>window.jQuery || document.write("<script src='<?php echo url_for('js/libs/jquery-1.5.1.min.js') ;?>'>\x3C/script>")</script>
 
   <!-- scripts concatenated and minified via ant build script-->
-  <script src="/flot/jquery.flot.js"></script>
-  <script src="/js/plugins.js"></script>
-  <script src="/js/script.js"></script>
+  <script src="<?php echo url_for('flot/jquery.flot.js') ;?>"></script>
+  <script src="<?php echo url_for('js/plugins.js') ;?>"></script>
+  <script src="<?php echo url_for('js/script.js') ;?>"></script>
+  
   <?php if (isset($google_maps_key)): ?>
   <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $google_maps_key;?>&amp;hl=en"></script>
   <script>
